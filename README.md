@@ -96,9 +96,3 @@ src/
 ## 📄 License
 
 © THXNXKXT. All rights reserved.
-
----
-
-<div align="center">
-สร้างด้วย 💚 โดยใบบิลน้อย
-</div>
