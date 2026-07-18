@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "baibillkub — บิลสวย เก็บเงินไว",
+  title: 'baibillkub — ใบบิลคับ "บิลสวย เก็บเงินไว"',
   description: "ใบเสนอราคา ใบแจ้งหนี้ ใบเสร็จ ใบส่งของ ส่งลิงก์ให้ลูกค้า สแกนพร้อมเพย์จ่ายได้เลย",
 };
 
