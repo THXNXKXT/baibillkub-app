@@ -13,6 +13,9 @@ export const user = pgTable("user", {
   shopName: text("shop_name"),
   logo: text("logo"),
   promptpayId: text("promptpay_id"),
+  taxId: text("tax_id"),
+  address: text("address"),
+  phone: text("phone"),
 });
 
 export const session = pgTable("session", {
@@ -59,6 +62,7 @@ export const customer = pgTable("customer", {
   email: text("email"),
   phone: text("phone"),
   address: text("address"),
+  taxId: text("tax_id"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 }, (t) => [index("customer_user_idx").on(t.userId)]);
 

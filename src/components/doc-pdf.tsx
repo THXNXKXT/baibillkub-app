@@ -32,9 +32,15 @@ function DocPDF({ doc, cust, owner, items }: Props) {
     <Document>
       <Page size="A4" style={s.page}>
         <View style={s.header}>
-          <Text style={s.muted}>{owner?.shopName || owner?.name}</Text>
+          <Text style={s.muted}>
+            {owner?.shopName || owner?.name}
+            {owner?.taxId ? ` · ภาษี ${owner.taxId}` : ""}
+          </Text>
           <Text style={s.title}>{TYPE_LABEL[doc.type]} #{doc.number}</Text>
-          <Text style={s.muted}>ลูกค้า: {cust?.name} · {new Date(doc.issueDate).toLocaleDateString("th-TH")}</Text>
+          <Text style={s.muted}>
+            ลูกค้า: {cust?.name}
+            {cust?.taxId ? ` · ภาษี ${cust.taxId}` : ""} · {new Date(doc.issueDate).toLocaleDateString("th-TH")}
+          </Text>
         </View>
         {items.map((it) => (
           <View key={it.id} style={s.row}>

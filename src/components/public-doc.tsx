@@ -50,9 +50,14 @@ export default function PublicDoc({ doc, cust, owner, items }: { doc: Doc; cust:
             <p className="text-[11px] text-[var(--color-muted)]">{owner?.shopName || owner?.name}</p>
           </div>
           <p className="text-[11px] text-[var(--color-muted)] mt-1">
-            {cust?.name} · {new Date(doc.issueDate).toLocaleDateString("th-TH")}
+            {cust?.name}{cust?.taxId && ` · ภาษี ${cust.taxId}`} · {new Date(doc.issueDate).toLocaleDateString("th-TH")}
             {doc.dueDate && ` · ครบกำหนด ${new Date(doc.dueDate).toLocaleDateString("th-TH")}`}
           </p>
+          {(owner?.taxId || owner?.address) && (
+            <p className="text-[10px] text-[var(--color-muted)] mt-1">
+              {owner.taxId && `ผู้ขาย ภาษี ${owner.taxId}`}{owner.address && ` · ${owner.address}`}
+            </p>
+          )}
         </div>
 
         <div className="px-6 pb-6 space-y-4">

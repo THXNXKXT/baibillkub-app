@@ -40,6 +40,7 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
           name: String(fd.get("newName")),
           email: String(fd.get("newEmail") || "") || undefined,
           phone: String(fd.get("newPhone") || "") || undefined,
+          taxId: String(fd.get("newTaxId") || "") || undefined,
           address: String(fd.get("newAddress") || "") || undefined,
         });
         customerId = c.id;
@@ -100,6 +101,7 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
             <input name="newName" required placeholder="ชื่อลูกค้า *" className={`${input} col-span-2`} />
             <input name="newEmail" placeholder="อีเมล" className={input} />
             <input name="newPhone" placeholder="เบอร์โทร" className={input} />
+            <input name="newTaxId" placeholder="เลขผู้เสียภาษี" className={`${input} col-span-2 tabular-nums`} />
             <textarea name="newAddress" placeholder="ที่อยู่ (พิมพ์ในบิล)" rows={2} className={`${input} col-span-2`} />
           </div>
         )}

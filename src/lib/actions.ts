@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { customer, document, documentItem } from "@/db/schema";
+import { customer, document, documentItem, user } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { nanoid } from "nanoid";
@@ -17,7 +17,7 @@ async function uid() {
 const PREFIX: Record<string, string> = { quotation: "QT", invoice: "INV", receipt: "RC", delivery_note: "DN" };
 
 // ---------- Customer ----------
-export async function createCustomer(data: { name: string; email?: string; phone?: string; address?: string }) {
+export async function createCustomer(data: { name: string; email?: string; phone?: string; address?: string; taxId?: string }) {
   const userId = await uid();
   const [c] = await db.insert(customer).values({ id: nanoid(), userId, ...data }).returning();
   revalidatePath("/customers");
@@ -183,4 +183,17 @@ export async function sendDocument(id: string) {
 
 export async function markPaid(id: string) {
   return confirmPayment(id);
+}
+
+// ---------- Settings ----------
+export async function getSettings() {
+  const userId = await uid();
+  const [u] = await db.select().from(user).where(eq(user.id, userId));
+  return u;
+}
+
+export async function saveSettings(data: { shopName?: string; promptpayId?: string; taxId?: string; address?: string; phone?: string }) {
+  const userId = await uid();
+  await db.update(user).set(data).where(eq(user.id, userId));
+  revalidatePath("/settings");
 }

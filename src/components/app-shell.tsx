@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, FileText, Users } from "lucide-react";
+import { LayoutDashboard, FileText, Users, Settings } from "lucide-react";
 
 const NAV = [
   { href: "/dashboard", label: "ภาพรวม", icon: LayoutDashboard },
   { href: "/documents", label: "เอกสาร", icon: FileText },
   { href: "/customers", label: "ลูกค้า", icon: Users },
+  { href: "/settings", label: "ตั้งค่า", icon: Settings },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {

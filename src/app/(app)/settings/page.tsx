@@ -1,0 +1,42 @@
+import { getSettings, saveSettings } from "@/lib/actions";
+
+export default async function SettingsPage() {
+  const u = await getSettings();
+  const input = "field w-full px-3 py-2 text-[13px]";
+
+  return (
+    <div className="max-w-md space-y-6">
+      <h1 className="text-[17px] font-semibold">ตั้งค่าร้าน</h1>
+      <form
+        action={async (fd) => {
+          "use server";
+          await saveSettings({
+            shopName: String(fd.get("shopName") || "") || undefined,
+            taxId: String(fd.get("taxId") || "") || undefined,
+            address: String(fd.get("address") || "") || undefined,
+            phone: String(fd.get("phone") || "") || undefined,
+            promptpayId: String(fd.get("promptpayId") || "") || undefined,
+          });
+        }}
+        className="card px-4 pt-4 pb-4 space-y-3"
+      >
+        <label className="block text-[11px] text-[var(--color-muted)]">ชื่อร้าน (พิมพ์ในบิล)
+          <input name="shopName" defaultValue={u.shopName ?? ""} className={input} />
+        </label>
+        <label className="block text-[11px] text-[var(--color-muted)]">เลขประจำตัวผู้เสียภาษี
+          <input name="taxId" defaultValue={u.taxId ?? ""} placeholder="0-0000-00000-00-0" className={`${input} tabular-nums`} />
+        </label>
+        <label className="block text-[11px] text-[var(--color-muted)]">ที่อยู่
+          <textarea name="address" defaultValue={u.address ?? ""} rows={2} className={input} />
+        </label>
+        <label className="block text-[11px] text-[var(--color-muted)]">เบอร์โทร
+          <input name="phone" defaultValue={u.phone ?? ""} className={input} />
+        </label>
+        <label className="block text-[11px] text-[var(--color-muted)]">พร้อมเพย์ (เบอร์/เลขบัตรปชช.)
+          <input name="promptpayId" defaultValue={u.promptpayId ?? ""} className={`${input} tabular-nums`} />
+        </label>
+        <button className="btn-accent w-full py-2 text-[13px] font-medium">บันทึก</button>
+      </form>
+    </div>
+  );
+}
