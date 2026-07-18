@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import { nanoid } from "nanoid";
 import { eq, and, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 async function uid() {
   const s = await auth.api.getSession({ headers: await headers() });
@@ -128,6 +129,7 @@ export async function deleteDocument(id: string) {
   if (!d || d.status !== "draft") throw new Error("ลบได้เฉพาะแบบร่าง");
   await db.delete(document).where(eq(document.id, id));
   revalidatePath("/documents");
+  redirect("/documents");
 }
 
 // ---------- Pay / Convert ----------

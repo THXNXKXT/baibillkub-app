@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getDocument, confirmPayment, convertDocument, deleteDocument, sendDocument } from "@/lib/actions";
+import { getDocument, confirmPayment, convertDocument, sendDocument } from "@/lib/actions";
+import DeleteButton from "./delete-button";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import DocPDFButton from "@/components/doc-pdf";
@@ -67,9 +68,7 @@ export default async function DocDetailPage({ params }: { params: Promise<{ id: 
             <form action={sendDocument.bind(null, doc.id)}>
               <button className="btn-accent px-4 py-2 font-medium">ส่ง</button>
             </form>
-            <form action={deleteDocument.bind(null, doc.id)}>
-              <button className="btn-ghost px-4 py-2 text-red-500 border-red-200">ลบ</button>
-            </form>
+            <DeleteButton id={doc.id} />
           </>
         )}
       </div>
