@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
-  const params = useSearchParams();
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,7 +31,7 @@ export default function LoginPage() {
       setError(data.message || "เข้าสู่ระบบไม่สำเร็จ");
       return;
     }
-    router.push(params.get("next") || "/dashboard");
+    router.push("/dashboard");
     router.refresh();
   }
 
