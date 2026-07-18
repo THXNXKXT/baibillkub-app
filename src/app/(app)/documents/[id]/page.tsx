@@ -4,6 +4,9 @@ import { getDocument, confirmPayment, convertDocument, sendDocument } from "@/li
 import DeleteButton from "./delete-button";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { db } from "@/db";
+import { user } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import DocPDFButton from "@/components/doc-pdf";
 import BillLayout from "@/components/bill-layout";
 import { ExternalLink } from "lucide-react";
@@ -17,7 +20,7 @@ export default async function DocDetailPage({ params }: { params: Promise<{ id: 
   if (!data) notFound();
   const { doc, customer: cust, items } = data;
   const session = await auth.api.getSession({ headers: await headers() });
-  const owner = session?.user ?? null;
+  const [owner] = await db.select().from(user).where(eq(user.id, session!.user.id));
 
   return (
     <div className="space-y-4">
