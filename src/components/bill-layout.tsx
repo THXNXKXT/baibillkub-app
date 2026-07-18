@@ -38,9 +38,8 @@ export default function BillLayout({ doc, cust, owner, items }: { doc: Doc; cust
         <div className="text-[11px] space-y-0.5 text-right">
           <p className="font-semibold">{owner?.shopName || owner?.name}</p>
           {owner?.address && <p>{owner.address}</p>}
-          {owner?.phone && <p className="tabular-nums">{owner.phone}</p>}
           {owner?.taxId && <p className="tabular-nums">ภาษี {owner.taxId}</p>}
-          {owner?.email && <p>{owner.email}</p>}
+          {owner?.phone && <p className="tabular-nums">{owner.phone}</p>}
         </div>
       </div>
 
