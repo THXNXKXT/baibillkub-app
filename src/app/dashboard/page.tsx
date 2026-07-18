@@ -3,7 +3,7 @@ import { db } from "@/db";
 import { document } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { and, eq, sql, gte } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 
 export default async function DashboardPage() {
   const s = await auth.api.getSession({ headers: await headers() });
