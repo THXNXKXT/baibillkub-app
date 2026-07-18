@@ -128,16 +128,31 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
         )}
       </div>
 
-      {/* วันที่ */}
-      <div className="grid grid-cols-2 gap-3">
-        <label className="text-[11px] text-[var(--color-muted)]">วันที่ออก
-          <input name="issueDate" type="date" required defaultValue={new Date().toISOString().slice(0, 10)} className={input} />
-        </label>
-        <label className="text-[11px] text-[var(--color-muted)]">ครบกำหนด
-          <input name="dueDate" type="date" className={input} />
-        </label>
+      {/* ชำระ + หมายเหตุ */}
+      <div className="card px-4 pt-4 pb-4 space-y-3">
+        <div className="grid grid-cols-2 gap-3">
+          <label className="text-[11px] text-[var(--color-muted)]">วันที่ออก
+            <input name="issueDate" type="date" required defaultValue={new Date().toISOString().slice(0, 10)} className={input} />
+          </label>
+          <label className="text-[11px] text-[var(--color-muted)]">ครบกำหนด
+            <input name="dueDate" type="date" className={input} />
+          </label>
+        </div>
+        {(type === "invoice" || type === "quotation") && (
+          <label className="text-[11px] text-[var(--color-muted)]">ช่องทางการชำระเงิน
+            <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} className={input}>
+              <option value="">ไม่ระบุ (ปล่อยว่าง)</option>
+              <option value="promptpay">พร้อมเพย์</option>
+              <option value="bank">โอนธนาคาร</option>
+              <option value="cash">เงินสด</option>
+            </select>
+          </label>
+        )}
+        <div className="grid grid-cols-2 gap-3">
+          <textarea value={terms} onChange={(e) => setTerms(e.target.value)} placeholder="รายละเอียดเงื่อนไข" rows={2} className={input} />
+          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="หมายเหตุ" rows={2} className={input} />
+        </div>
       </div>
-
       {/* รายการ */}
       <div className="card px-4 pt-4 pb-4 space-y-2">
         <p className="text-[13px] font-semibold">รายการ</p>
@@ -174,22 +189,6 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
         </div>
       </div>
 
-      {/* ชำระ (เฉพาะ invoice) + หมายเหตุ */}
-      <div className="grid grid-cols-2 gap-3">
-        {type === "invoice" || type === "quotation" ? (
-          <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} className={input}>
-            <option value="">ไม่ระบุ (ปล่อยว่าง)</option>
-            <option value="promptpay">พร้อมเพย์</option>
-            <option value="bank">โอนธนาคาร</option>
-            <option value="cash">เงินสด</option>
-          </select>
-        ) : <span />}
-        <div className="space-y-2">
-          <textarea value={terms} onChange={(e) => setTerms(e.target.value)} placeholder="รายละเอียดเงื่อนไข" rows={1} className={input} />
-          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="หมายเหตุ" rows={1} className={input} />
-        </div>
-      </div>
-
       {error && <p className="text-[12px] text-red-500">{error}</p>}
       <button disabled={loading} className="btn-accent w-full py-2.5 text-[13px] font-medium disabled:opacity-50">
         {loading ? "กำลังบันทึก…" : "สร้างเอกสาร"}
@@ -221,7 +220,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
   );
 
   return (
-    <div className="grid lg:grid-cols-[1fr_minmax(340px,400px)] gap-6 items-start">
+    <div className="grid lg:grid-cols-[1fr_minmax(420px,480px)] gap-6 items-start">
       {formEl}
       <div className="hidden lg:block">{preview}</div>
     </div>
