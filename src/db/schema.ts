@@ -84,7 +84,7 @@ export const document = pgTable("document", {
   tax: numeric("tax", { precision: 12, scale: 2 }).notNull().default("0"),
   discount: numeric("discount", { precision: 12, scale: 2 }).notNull().default("0"),
   total: numeric("total", { precision: 12, scale: 2 }).notNull().default("0"),
-  paymentMethod: text("payment_method", { enum: ["promptpay", "cash"] }),
+  paymentMethod: text("payment_method", { enum: ["promptpay", "cash", "bank"] }),
   publicToken: text("public_token").notNull().unique(),
   convertedFromId: text("converted_from_id"),
   slipImage: text("slip_image"),

@@ -82,7 +82,7 @@ export default function BillLayout({ doc, cust, owner, items }: { doc: Doc; cust
 
       {/* footer */}
       <div className="grid grid-cols-2 gap-6 px-6 mt-5 pb-6 text-[11px]">
-        {doc.type === "invoice" ? (
+        {doc.type === "invoice" && (
           <div className="space-y-0.5">
             <p className="font-semibold underline underline-offset-2 mb-1.5">ช่องทางการชำระเงิน</p>
             {doc.paymentMethod === "promptpay" && owner?.promptpayId && (
@@ -92,18 +92,16 @@ export default function BillLayout({ doc, cust, owner, items }: { doc: Doc; cust
                 <p>QR Code : อยู่ในหน้าชำระเงินออนไลน์</p>
               </>
             )}
-            {doc.paymentMethod === "cash" && <p>เงินสด</p>}
-            {!doc.paymentMethod && owner?.promptpayId && (
+            {doc.paymentMethod === "bank" && owner?.bankAccount && (
               <>
-                <p>ชื่อบัญชี : {owner.promptpayName || owner.shopName || owner.name}</p>
-                <p className="tabular-nums">พร้อมเพย์ : {owner.promptpayId}</p>
+                <p>ชื่อบัญชี : {owner.bankAccountName || owner.shopName || owner.name}</p>
+                <p className="tabular-nums">เลขบัญชี : {owner.bankAccount}{owner.bankName && ` (${owner.bankName})`}</p>
               </>
             )}
-            {doc.notes && <p className="text-[var(--color-muted)] pt-1">{doc.notes}</p>}
+            {doc.paymentMethod === "cash" && <p>เงินสด</p>}
           </div>
-        ) : (
-          <div>{doc.notes && <p className="text-[var(--color-muted)]">{doc.notes}</p>}</div>
         )}
+        <div>{doc.notes && <p className="text-[var(--color-muted)]">{doc.notes}</p>}</div>
         <div className="text-center space-y-0.5 self-end">
           <p className="mt-8">({owner?.name})</p>
           <p>ผู้มีอำนาจลงนาม</p>

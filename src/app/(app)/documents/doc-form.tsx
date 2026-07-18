@@ -20,7 +20,18 @@ const fmt = (n: number) => n.toLocaleString("th-TH", { minimumFractionDigits: 2 
 
 export default function DocForm({ customers, owner }: { customers: Awaited<ReturnType<typeof listCustomers>>; owner: NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>["user"] }) {
   const router = useRouter();
-  const [type, setType] = useState<string>("invoice");
+  const [type, setTypeRaw] = useState<string>("invoice");
+  const [notes, setNotes] = useState("");
+  const DEFAULT_NOTES: Record<string, string> = {
+    quotation: "",
+    invoice: "",
+    receipt: "ได้รับเงินเรียบร้อยแล้ว",
+    delivery_note: "กรุณาตรวจสอบสินค้าภายใน 7 วัน",
+  };
+  function setType(t: string) {
+    setTypeRaw(t);
+    setNotes((n) => (Object.values(DEFAULT_NOTES).includes(n) ? DEFAULT_NOTES[t] : n));
+  }
   const [custMode, setCustMode] = useState<"pick" | "new">(customers.length ? "pick" : "new");
   const [custId, setCustId] = useState("");
   const [newName, setNewName] = useState("");
@@ -32,7 +43,6 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
   const [taxRate, setTaxRate] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [discount, setDiscount] = useState(0);
-  const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -162,14 +172,17 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
         </div>
       </div>
 
-      {/* ชำระ + หมายเหตุ */}
+      {/* ชำระ (เฉพาะ invoice) + หมายเหตุ */}
       <div className="grid grid-cols-2 gap-3">
-        <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} className={input}>
-          <option value="">วิธีชำระเงิน</option>
-          <option value="promptpay">พร้อมเพย์</option>
-          <option value="cash">เงินสด</option>
-        </select>
-        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="หมายเหตุ" rows={1} className={input} />
+        {type === "invoice" ? (
+          <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} className={input}>
+            <option value="">ไม่ระบุ (ปล่อยว่าง)</option>
+            <option value="promptpay">พร้อมเพย์</option>
+            <option value="bank">โอนธนาคาร</option>
+            <option value="cash">เงินสด</option>
+          </select>
+        ) : <span />}
+        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="รายละเอียดเงื่อนไข" rows={1} className={input} />
       </div>
 
       {error && <p className="text-[12px] text-red-500">{error}</p>}

@@ -45,7 +45,7 @@ export type DocInput = {
   notes?: string;
   taxRate: number; // 0 หรือ 7
   discount?: number;
-  paymentMethod?: "promptpay" | "cash";
+  paymentMethod?: "promptpay" | "cash" | "bank";
   items: { description: string; qty: number; unitPrice: number }[];
 };
 
