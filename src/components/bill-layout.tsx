@@ -80,6 +80,14 @@ export default function BillLayout({ doc, cust, owner, items }: { doc: Doc; cust
               </span>
             </div>
           )}
+          {Number(doc.whtRate) > 0 && (
+            <div className="flex justify-between">
+              <span>หัก ณ ที่จ่าย ({Number(doc.whtRate)}%)</span>
+              <span className="tabular-nums font-semibold">
+                {fmt(((Number(doc.subtotal) - (doc.discountType === "percent" ? (Number(doc.subtotal) * Number(doc.discount)) / 100 : Number(doc.discount))) * Number(doc.whtRate)) / 100)}.-
+              </span>
+            </div>
+          )}
         </div>
         <div className="mt-3 -mx-6 bg-[var(--color-accent)] text-[var(--color-surface)] px-6 py-2.5 flex justify-between items-center">
           <span className="text-[12px]">{thaiBaht(doc.total)}</span>

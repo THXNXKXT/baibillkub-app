@@ -16,6 +16,15 @@ const TYPES = [
 
 type Item = { description: string; qty: number; unitPrice: number };
 const input = "field w-full px-3 py-2 text-[13px]";
+
+function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button type="button" role="switch" aria-checked={on} onClick={() => onChange(!on)}
+      className={`w-9 h-5 rounded-full transition-colors relative ${on ? "bg-[var(--color-accent)]" : "bg-[var(--color-rule)]"}`}>
+      <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${on ? "left-[18px]" : "left-0.5"}`} />
+    </button>
+  );
+}
 const fmt = (n: number) => n.toLocaleString("th-TH", { minimumFractionDigits: 2 });
 
 export default function DocForm({ customers, owner }: { customers: Awaited<ReturnType<typeof listCustomers>>; owner: NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>["user"] }) {
@@ -46,13 +55,16 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
   const [discount, setDiscount] = useState(0);
   const [discountType, setDiscountType] = useState<"amount" | "percent">("amount");
   const [discOn, setDiscOn] = useState(false);
+  const [whtOn, setWhtOn] = useState(false);
+  const [whtRate, setWhtRate] = useState(3);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const subtotal = items.reduce((s, i) => s + i.qty * i.unitPrice, 0);
   const disc = discOn ? (discountType === "percent" ? (subtotal * discount) / 100 : discount) : 0;
   const tax = ((subtotal - disc) * taxRate) / 100;
-  const total = subtotal - disc + tax;
+  const wht = whtOn ? ((subtotal - disc) * whtRate) / 100 : 0;
+  const total = subtotal - disc + tax - wht;
   const setItem = (idx: number, patch: Partial<Item>) => setItems(items.map((it, i) => (i === idx ? { ...it, ...patch } : it)));
 
   async function submit(fd: FormData) {
@@ -84,6 +96,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
         taxRate,
         discount: discOn ? discount : 0,
         discountType,
+        whtRate: whtOn ? whtRate : 0,
         items: validItems,
       };
       await createDocument(data);
@@ -179,29 +192,50 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
           <Plus className="w-3.5 h-3.5" /> เพิ่มรายการ
         </button>
         {/* การคำนวณ */}
-        <div className="border-t border-[var(--color-rule)] pt-3 space-y-2 text-[13px]">
+        <div className="border-t border-[var(--color-rule)] pt-3 space-y-3 text-[13px]">
           <p className="text-[11px] font-semibold text-[var(--color-muted)] uppercase tracking-[0.08em]">การคำนวณ</p>
           <div className="flex justify-between text-[var(--color-muted)]">
             <span>รวม</span><span className="tabular-nums">{fmt(subtotal)}</span>
           </div>
-          <label className="flex items-center gap-1.5">
-            <input type="checkbox" checked={discOn} onChange={(e) => setDiscOn(e.target.checked)} /> ใช้ส่วนลด
-          </label>
-          {discOn && (
-            <div className="flex justify-between items-center gap-2">
-              <div className="flex gap-1 text-[11px]">
-                <button type="button" onClick={() => setDiscountType("amount")} className={`px-2 py-0.5 rounded-full ${discountType === "amount" ? "chip-active" : "chip"}`}>จำนวน</button>
-                <button type="button" onClick={() => setDiscountType("percent")} className={`px-2 py-0.5 rounded-full ${discountType === "percent" ? "chip-active" : "chip"}`}>%</button>
-              </div>
-              <input type="number" min={0} step="0.01" value={discount} onChange={(e) => setDiscount(+e.target.value)} className="field w-20 px-2 py-1 text-[13px] text-right tabular-nums" placeholder="0.00" />
-            </div>
-          )}
-          <label className="flex justify-between items-center">
-            <span className="flex items-center gap-1.5">
-              <input type="checkbox" checked={taxRate === 7} onChange={(e) => setTaxRate(e.target.checked ? 7 : 0)} /> เพิ่ม VAT 7%
+
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Toggle on={discOn} onChange={setDiscOn} /> ใช้ส่วนลด
+            </span>
+            {discOn && (
+              <span className="flex items-center gap-2">
+                <span className="flex gap-1 text-[11px]">
+                  <button type="button" onClick={() => setDiscountType("amount")} className={`px-2 py-0.5 rounded-full ${discountType === "amount" ? "chip-active" : "chip"}`}>จำนวน</button>
+                  <button type="button" onClick={() => setDiscountType("percent")} className={`px-2 py-0.5 rounded-full ${discountType === "percent" ? "chip-active" : "chip"}`}>%</button>
+                </span>
+                <input type="number" min={0} step="0.01" value={discount} onChange={(e) => setDiscount(+e.target.value)} className="field w-20 px-2 py-1 text-[13px] text-right tabular-nums" placeholder="0.00" />
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Toggle on={taxRate === 7} onChange={(v) => setTaxRate(v ? 7 : 0)} /> เพิ่ม VAT 7%
             </span>
             <span className="tabular-nums text-[var(--color-muted)]">{fmt(tax)}</span>
-          </label>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Toggle on={whtOn} onChange={setWhtOn} /> หัก ณ ที่จ่าย
+            </span>
+            {whtOn && (
+              <span className="flex items-center gap-2">
+                <span className="flex gap-1 text-[11px]">
+                  {[1, 3, 5].map((r) => (
+                    <button key={r} type="button" onClick={() => setWhtRate(r)} className={`px-2 py-0.5 rounded-full ${whtRate === r ? "chip-active" : "chip"}`}>{r}%</button>
+                  ))}
+                </span>
+                <span className="tabular-nums text-[var(--color-muted)]">{fmt(wht)}</span>
+              </span>
+            )}
+          </div>
+
           <div className="flex justify-between text-[17px] font-bold text-[var(--color-accent-ink)]">
             <span>ยอดรวม</span><span className="tabular-nums">{fmt(total)} ฿</span>
           </div>
@@ -220,7 +254,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
   const mockDoc = {
     id: "", userId: "", customerId: "", type: type as never, number: "0000", status: "draft" as const,
     issueDate: new Date(), dueDate: null, terms: terms || null, notes: notes || null,
-    subtotal: subtotal.toFixed(2), tax: tax.toFixed(2), discount: (discOn ? discount : 0).toFixed(2), discountType, total: total.toFixed(2),
+    subtotal: subtotal.toFixed(2), tax: tax.toFixed(2), discount: (discOn ? discount : 0).toFixed(2), discountType, whtRate: (whtOn ? whtRate : 0).toFixed(2), total: total.toFixed(2),
     paymentMethod: (paymentMethod || null) as never, publicToken: "", convertedFromId: null, slipImage: null, confirmedAt: null,
     createdAt: new Date(), updatedAt: new Date(),
   };
