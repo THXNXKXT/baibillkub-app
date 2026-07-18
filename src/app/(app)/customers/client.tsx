@@ -6,7 +6,32 @@ import { ChevronDown } from "lucide-react";
 import Mascot from "@/components/mascot";
 import type { listCustomers } from "@/lib/actions";
 
-export default function CustomersClient({ customers }: { customers: Awaited<ReturnType<typeof listCustomers>> }) {
+type Cust = Awaited<ReturnType<typeof listCustomers>>[number];
+
+function CustomerRow({ c }: { c: Cust }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <li>
+      <button onClick={() => setOpen(!open)} className="w-full flex items-center gap-4 px-4 py-3 hover:bg-[var(--color-paper-2)] transition-colors text-left">
+        <p className="flex-1 text-[13px] font-semibold truncate">{c.name}</p>
+        <ChevronDown className={`w-4 h-4 text-[var(--color-muted)] transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="px-4 pb-4 pt-1 grid sm:grid-cols-2 gap-x-6 gap-y-1 text-[12px] border-t border-[var(--color-rule)] bg-[var(--color-paper-2)]">
+          {c.phone && <p className="tabular-nums">โทร.{c.phone}</p>}
+          {c.email && <p>{c.email}</p>}
+          {c.taxId && <p className="tabular-nums">ภาษี {c.taxId}</p>}
+          {c.address && <p className="sm:col-span-2 whitespace-pre-line text-[var(--color-muted)]">{c.address}</p>}
+          <form action={deleteCustomer.bind(null, c.id)} className="sm:col-span-2 pt-1">
+            <button className="text-[11px] text-red-500 hover:underline">ลบลูกค้า</button>
+          </form>
+        </div>
+      )}
+    </li>
+  );
+}
+
+export default function CustomersClient({ customers }: { customers: Cust[] }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -55,19 +80,7 @@ export default function CustomersClient({ customers }: { customers: Awaited<Retu
       ) : (
         <ul className="card divide-y divide-[var(--color-rule)]">
           {customers.map((c) => (
-            <li key={c.id} className="flex items-center gap-4 px-4 py-3">
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-semibold truncate">{c.name}</p>
-                {c.address && <p className="text-[11px] text-[var(--color-muted)] truncate">{c.address}</p>}
-              </div>
-              <div className="text-right text-[11px] text-[var(--color-muted)] space-y-0.5 shrink-0">
-                {c.phone && <p className="tabular-nums">โทร.{c.phone}</p>}
-                {c.taxId && <p className="tabular-nums">ภาษี {c.taxId}</p>}
-              </div>
-              <form action={deleteCustomer.bind(null, c.id)}>
-                <button className="text-[11px] text-red-500 hover:underline shrink-0">ลบ</button>
-              </form>
-            </li>
+            <CustomerRow key={c.id} c={c} />
           ))}
         </ul>
       )}
