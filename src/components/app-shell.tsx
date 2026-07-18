@@ -57,7 +57,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </nav>
 
-      <main className="flex-1 min-w-0 px-5 sm:px-8 py-6 pb-24 sm:pb-6 max-w-5xl">{children}</main>
+      <main className="flex-1 min-w-0 px-5 sm:px-8 py-6 pb-24 sm:pb-6">{children}</main>
     </div>
   );
 }
