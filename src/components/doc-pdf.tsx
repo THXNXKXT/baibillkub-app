@@ -55,7 +55,7 @@ const Download = dynamic(
     const { PDFDownloadLink } = await import("@react-pdf/renderer");
     return function DL(props: Props) {
       return (
-        <PDFDownloadLink document={<DocPDF {...props} />} fileName={`${props.doc.number}.pdf`} className="rounded-lg border border-neutral-200 px-4 py-2 text-sm text-[#6e6e73] hover:border-emerald-400">
+        <PDFDownloadLink document={<DocPDF {...props} />} fileName={`${props.doc.number}.pdf`} className="btn-ghost px-3 py-1.5 text-[11px]">
           PDF
         </PDFDownloadLink>
       );

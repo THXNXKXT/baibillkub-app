@@ -5,8 +5,8 @@ import Mascot from "@/components/mascot";
 
 const TYPE_LABEL: Record<string, string> = { quotation: "เสนอราคา", invoice: "แจ้งหนี้", receipt: "เสร็จ", delivery_note: "ส่งของ" };
 const STATUS_DOT: Record<string, string> = {
-  draft: "bg-neutral-300", sent: "bg-amber-400", paid: "bg-[var(--color-accent)]",
-  accepted: "bg-[var(--color-accent)]", rejected: "bg-red-400", cancelled: "bg-neutral-300",
+  draft: "bg-[var(--color-rule)]", sent: "bg-amber-400", paid: "bg-[var(--color-accent)]",
+  accepted: "bg-[var(--color-accent)]", rejected: "bg-red-400", cancelled: "bg-[var(--color-rule)]",
 };
 const STATUS_LABEL: Record<string, string> = { draft: "ร่าง", sent: "รอชำระ", paid: "ชำระแล้ว", accepted: "ตกลง", rejected: "ไม่ตกลง", cancelled: "ยกเลิก" };
 
