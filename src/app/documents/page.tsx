@@ -42,12 +42,14 @@ export default async function DocumentsPage({ searchParams }: { searchParams: Pr
       ) : (
         <ul className="bg-white rounded-xl border border-neutral-200 divide-y divide-neutral-100">
           {docs.map(({ doc, customerName }) => (
-            <li key={doc.id} className="flex items-center px-4 py-3">
+            <li key={doc.id}>
+              <Link href={`/documents/${doc.id}`} className="flex items-center px-4 py-3 hover:bg-neutral-50">
               <div className="flex-1">
                 <p className="text-sm font-medium">{doc.number} · {customerName}</p>
                 <p className="text-xs text-[#6e6e73]">{TYPE_LABEL[doc.type]} · {Number(doc.total).toLocaleString()} บาท</p>
               </div>
               <span className={`text-xs rounded-full px-2 py-0.5 ${STATUS_STYLE[doc.status]}`}>{STATUS_LABEL[doc.status]}</span>
+              </Link>
             </li>
           ))}
         </ul>

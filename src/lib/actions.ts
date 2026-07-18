@@ -127,3 +127,54 @@ export async function deleteDocument(id: string) {
   await db.delete(document).where(eq(document.id, id));
   revalidatePath("/documents");
 }
+
+// ---------- Pay / Convert ----------
+async function nextNumber(userId: string, type: string) {
+  const [last] = await db
+    .select({ number: document.number })
+    .from(document)
+    .where(and(eq(document.userId, userId), eq(document.type, type as never)))
+    .orderBy(desc(document.createdAt))
+    .limit(1);
+  const seq = last ? parseInt(last.number.split("-")[1]) + 1 : 1;
+  return `${PREFIX[type]}-${String(seq).padStart(4, "0")}`;
+}
+
+async function convert(srcId: string, userId: string, type: "invoice" | "receipt" | "delivery_note") {
+  const [src] = await db.select().from(document).where(and(eq(document.id, srcId), eq(document.userId, userId)));
+  if (!src) throw new Error("ไม่พบเอกสารต้นทาง");
+  const [doc] = await db
+    .insert(document)
+    .values({
+      id: nanoid(), userId, customerId: src.customerId, type,
+      number: await nextNumber(userId, type),
+      status: type === "receipt" ? "paid" : "draft",
+      issueDate: new Date(), notes: src.notes,
+      subtotal: src.subtotal, tax: src.tax, total: src.total,
+      paymentMethod: src.paymentMethod, publicToken: nanoid(21), convertedFromId: src.id,
+    })
+    .returning();
+  const items = await db.select().from(documentItem).where(eq(documentItem.documentId, srcId));
+  if (items.length)
+    await db.insert(documentItem).values(items.map((i) => ({ id: nanoid(), documentId: doc.id, description: i.description, qty: i.qty, unitPrice: i.unitPrice })));
+  return doc;
+}
+
+export async function convertDocument(id: string, type: "invoice" | "delivery_note") {
+  const userId = await uid();
+  await convert(id, userId, type);
+  revalidatePath("/documents");
+}
+
+export async function confirmPayment(id: string) {
+  const userId = await uid();
+  await db.update(document).set({ status: "paid", confirmedAt: new Date() }).where(and(eq(document.id, id), eq(document.userId, userId)));
+  // ออกใบเสร็จอัตโนมัติ ถ้ายังไม่มี
+  const [rc] = await db.select().from(document).where(and(eq(document.convertedFromId, id), eq(document.type, "receipt")));
+  if (!rc) await convert(id, userId, "receipt");
+  revalidatePath("/documents");
+}
+
+export async function markPaid(id: string) {
+  return confirmPayment(id);
+}
