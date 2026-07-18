@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer, numeric, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, numeric, index } from "drizzle-orm/pg-core";
 
 // ---------- Better-Auth ----------
 export const user = pgTable("user", {
