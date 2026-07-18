@@ -72,7 +72,14 @@ export default function BillLayout({ doc, cust, owner, items }: { doc: Doc; cust
         <div className="ml-auto w-64 mt-3 space-y-1 text-[12px]">
           <div className="flex justify-between"><span>ราคารวม</span><span className="tabular-nums font-semibold">{fmt(doc.subtotal)}.-</span></div>
           {Number(doc.tax) > 0 && <div className="flex justify-between"><span>ภาษีมูลค่าเพิ่ม (7%)</span><span className="tabular-nums font-semibold">{fmt(doc.tax)}.-</span></div>}
-          {Number(doc.discount) > 0 && <div className="flex justify-between"><span>ส่วนลด</span><span className="tabular-nums font-semibold">{fmt(doc.discount)}.-</span></div>}
+          {Number(doc.discount) > 0 && (
+            <div className="flex justify-between">
+              <span>ส่วนลด{doc.discountType === "percent" ? ` (${Number(doc.discount)}%)` : ""}</span>
+              <span className="tabular-nums font-semibold">
+                {fmt(doc.discountType === "percent" ? (Number(doc.subtotal) * Number(doc.discount)) / 100 : Number(doc.discount))}.-
+              </span>
+            </div>
+          )}
         </div>
         <div className="mt-3 -mx-6 bg-[var(--color-accent)] text-[var(--color-surface)] px-6 py-2.5 flex justify-between items-center">
           <span className="text-[12px]">{thaiBaht(doc.total)}</span>

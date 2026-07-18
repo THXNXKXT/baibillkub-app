@@ -46,14 +46,16 @@ export type DocInput = {
   terms?: string;
   taxRate: number; // 0 หรือ 7
   discount?: number;
+  discountType?: "amount" | "percent";
   paymentMethod?: "promptpay" | "cash" | "bank";
   items: { description: string; qty: number; unitPrice: number }[];
 };
 
-function calc(items: DocInput["items"], taxRate: number, discount = 0) {
+function calc(items: DocInput["items"], taxRate: number, discount = 0, discountType: "amount" | "percent" = "amount") {
   const subtotal = items.reduce((s, i) => s + i.qty * i.unitPrice, 0);
-  const tax = ((subtotal - discount) * taxRate) / 100;
-  return { subtotal, tax, total: subtotal - discount + tax };
+  const disc = discountType === "percent" ? (subtotal * discount) / 100 : discount;
+  const tax = ((subtotal - disc) * taxRate) / 100;
+  return { subtotal, tax, total: subtotal - disc + tax };
 }
 
 export async function createDocument(data: DocInput) {
@@ -66,7 +68,7 @@ export async function createDocument(data: DocInput) {
     .limit(1);
   const seq = last ? parseInt(last.number.split("-")[1]) + 1 : 1;
   const number = `${PREFIX[data.type]}-${String(seq).padStart(4, "0")}`;
-  const { subtotal, tax, total } = calc(data.items, data.taxRate, data.discount);
+  const { subtotal, tax, total } = calc(data.items, data.taxRate, data.discount, data.discountType);
 
   const [doc] = await db
     .insert(document)
@@ -85,6 +87,7 @@ export async function createDocument(data: DocInput) {
       subtotal: subtotal.toFixed(2),
       tax: tax.toFixed(2),
       discount: (data.discount ?? 0).toFixed(2),
+      discountType: data.discountType ?? "amount",
       total: total.toFixed(2),
       publicToken: nanoid(21),
     })
@@ -156,7 +159,7 @@ async function convert(srcId: string, userId: string, type: "invoice" | "receipt
       number: await nextNumber(userId, type),
       status: type === "receipt" ? "paid" : "draft",
       issueDate: new Date(), notes: src.notes, terms: src.terms,
-      subtotal: src.subtotal, tax: src.tax, discount: src.discount, total: src.total,
+      subtotal: src.subtotal, tax: src.tax, discount: src.discount, discountType: src.discountType, total: src.total,
       paymentMethod: src.paymentMethod, publicToken: nanoid(21), convertedFromId: src.id,
     })
     .returning();
