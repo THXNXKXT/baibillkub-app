@@ -156,6 +156,9 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
       {/* รายการ */}
       <div className="card px-4 pt-4 pb-4 space-y-2">
         <p className="text-[13px] font-semibold">รายการ</p>
+        <div className="grid grid-cols-[1fr_56px_88px_28px] gap-2 text-[10px] text-[var(--color-muted)] uppercase tracking-[0.08em]">
+          <span>รายละเอียด</span><span className="text-right">จำนวน</span><span className="text-right">ราคา/หน่วย</span><span />
+        </div>
         {items.map((it, i) => (
           <div key={i} className="grid grid-cols-[1fr_56px_88px_28px] gap-2 items-center">
             <input value={it.description} onChange={(e) => setItem(i, { description: e.target.value })} placeholder="รายการ" className={input} />
@@ -175,7 +178,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
           </div>
           <label className="flex justify-between items-center">
             <span>ส่วนลด</span>
-            <input type="number" min={0} step="0.01" value={discount} onChange={(e) => setDiscount(+e.target.value)} className={`${input} w-24 text-right tabular-nums py-1`} />
+            <input type="number" min={0} step="0.01" value={discount} onChange={(e) => setDiscount(+e.target.value)} className={`${input} w-24 text-right tabular-nums py-1`} placeholder="0.00" />
           </label>
           <label className="flex justify-between items-center">
             <span className="flex items-center gap-1.5">
