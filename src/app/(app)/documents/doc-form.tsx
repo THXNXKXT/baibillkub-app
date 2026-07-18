@@ -11,22 +11,28 @@ const TYPES = [
   { v: "receipt", label: "ใบเสร็จรับเงิน" },
   { v: "delivery_note", label: "ใบส่งของ" },
 ] as const;
+const TYPE_LABEL = Object.fromEntries(TYPES.map((t) => [t.v, t.label]));
 
 type Item = { description: string; qty: number; unitPrice: number };
 const input = "field w-full px-3 py-2 text-[13px]";
+const fmt = (n: number) => n.toLocaleString("th-TH", { minimumFractionDigits: 2 });
 
 export default function DocForm({ customers }: { customers: { id: string; name: string }[] }) {
   const router = useRouter();
   const [type, setType] = useState<string>("invoice");
   const [custMode, setCustMode] = useState<"pick" | "new">(customers.length ? "pick" : "new");
+  const [custId, setCustId] = useState("");
+  const [newName, setNewName] = useState("");
   const [items, setItems] = useState<Item[]>([{ description: "", qty: 1, unitPrice: 0 }]);
   const [taxRate, setTaxRate] = useState(0);
+  const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const subtotal = items.reduce((s, i) => s + i.qty * i.unitPrice, 0);
   const tax = (subtotal * taxRate) / 100;
   const setItem = (idx: number, patch: Partial<Item>) => setItems(items.map((it, i) => (i === idx ? { ...it, ...patch } : it)));
+  const custName = custMode === "new" ? newName : customers.find((c) => c.id === custId)?.name ?? "";
 
   async function submit(fd: FormData) {
     setError("");
@@ -34,10 +40,10 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
     if (!validItems.length) return setError("ใส่รายการอย่างน้อย 1 รายการ");
     setLoading(true);
     try {
-      let customerId = String(fd.get("customerId") || "");
+      let customerId = custId;
       if (custMode === "new") {
         const c = await createCustomer({
-          name: String(fd.get("newName")),
+          name: newName,
           email: String(fd.get("newEmail") || "") || undefined,
           phone: String(fd.get("newPhone") || "") || undefined,
           taxId: String(fd.get("newTaxId") || "") || undefined,
@@ -51,7 +57,7 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
         customerId,
         issueDate: new Date(String(fd.get("issueDate"))),
         dueDate: fd.get("dueDate") ? new Date(String(fd.get("dueDate"))) : undefined,
-        notes: String(fd.get("notes") || "") || undefined,
+        notes: notes || undefined,
         paymentMethod: (fd.get("paymentMethod") || undefined) as DocInput["paymentMethod"],
         taxRate,
         items: validItems,
@@ -65,17 +71,12 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
     }
   }
 
-  return (
+  const formEl = (
     <form action={submit} className="space-y-5">
       {/* type chips */}
       <div className="flex gap-1 text-[13px]">
         {TYPES.map((t) => (
-          <button
-            key={t.v}
-            type="button"
-            onClick={() => setType(t.v)}
-            className={`px-3 py-1.5 ${type === t.v ? "chip-active" : "chip"}`}
-          >
+          <button key={t.v} type="button" onClick={() => setType(t.v)} className={`px-3 py-1.5 ${type === t.v ? "chip-active" : "chip"}`}>
             {t.label}
           </button>
         ))}
@@ -92,13 +93,13 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
           )}
         </div>
         {custMode === "pick" ? (
-          <select name="customerId" required className={input}>
+          <select value={custId} onChange={(e) => setCustId(e.target.value)} required className={input}>
             <option value="">เลือกลูกค้า</option>
             {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         ) : (
           <div className="grid grid-cols-2 gap-2">
-            <input name="newName" required placeholder="ชื่อลูกค้า *" className={`${input} col-span-2`} />
+            <input value={newName} onChange={(e) => setNewName(e.target.value)} required placeholder="ชื่อลูกค้า *" className={`${input} col-span-2`} />
             <input name="newEmail" placeholder="อีเมล" className={input} />
             <input name="newPhone" placeholder="เบอร์โทร" className={input} />
             <input name="newTaxId" placeholder="เลขผู้เสียภาษี" className={`${input} col-span-2 tabular-nums`} />
@@ -120,15 +121,11 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
       {/* รายการ */}
       <div className="card px-4 pt-4 pb-4 space-y-2">
         <p className="text-[13px] font-semibold">รายการ</p>
-        <div className="grid grid-cols-[1fr_64px_96px_80px_28px] gap-2 text-[10px] text-[var(--color-muted)] uppercase tracking-[0.08em]">
-          <span>รายละเอียด</span><span className="text-right">จำนวน</span><span className="text-right">ราคา/หน่วย</span><span className="text-right">รวม</span><span />
-        </div>
         {items.map((it, i) => (
-          <div key={i} className="grid grid-cols-[1fr_64px_96px_80px_28px] gap-2 items-center">
+          <div key={i} className="grid grid-cols-[1fr_56px_88px_28px] gap-2 items-center">
             <input value={it.description} onChange={(e) => setItem(i, { description: e.target.value })} placeholder="รายการ" className={input} />
             <input type="number" min={1} value={it.qty} onChange={(e) => setItem(i, { qty: +e.target.value })} className={`${input} text-right tabular-nums`} />
             <input type="number" min={0} step="0.01" value={it.unitPrice} onChange={(e) => setItem(i, { unitPrice: +e.target.value })} className={`${input} text-right tabular-nums`} />
-            <span className="text-right text-[13px] tabular-nums text-[var(--color-muted)]">{(it.qty * it.unitPrice).toFixed(2)}</span>
             <button type="button" onClick={() => setItems(items.filter((_, x) => x !== i))} className="text-[var(--color-muted)] hover:text-red-500 transition-colors">
               <Trash2 className="w-4 h-4" />
             </button>
@@ -139,16 +136,16 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
         </button>
         <div className="border-t border-[var(--color-rule)] pt-3 space-y-1 text-[13px]">
           <div className="flex justify-between text-[var(--color-muted)]">
-            <span>รวม</span><span className="tabular-nums">{subtotal.toFixed(2)}</span>
+            <span>รวม</span><span className="tabular-nums">{fmt(subtotal)}</span>
           </div>
           <label className="flex justify-between items-center">
             <span className="flex items-center gap-1.5">
               <input type="checkbox" checked={taxRate === 7} onChange={(e) => setTaxRate(e.target.checked ? 7 : 0)} /> VAT 7%
             </span>
-            <span className="tabular-nums text-[var(--color-muted)]">{tax.toFixed(2)}</span>
+            <span className="tabular-nums text-[var(--color-muted)]">{fmt(tax)}</span>
           </label>
           <div className="flex justify-between text-[17px] font-bold text-[var(--color-accent-ink)]">
-            <span>ยอดรวม</span><span className="tabular-nums">{(subtotal + tax).toFixed(2)} ฿</span>
+            <span>ยอดรวม</span><span className="tabular-nums">{fmt(subtotal + tax)} ฿</span>
           </div>
         </div>
       </div>
@@ -160,7 +157,7 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
           <option value="promptpay">พร้อมเพย์</option>
           <option value="cash">เงินสด</option>
         </select>
-        <textarea name="notes" placeholder="หมายเหตุ" rows={1} className={input} />
+        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="หมายเหตุ" rows={1} className={input} />
       </div>
 
       {error && <p className="text-[12px] text-red-500">{error}</p>}
@@ -168,5 +165,47 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
         {loading ? "กำลังบันทึก…" : "สร้างเอกสาร"}
       </button>
     </form>
+  );
+
+  // preview — โครงเดียวกับ public doc
+  const validItems = items.filter((i) => i.description.trim());
+  const preview = (
+    <div className="card rounded-2xl overflow-hidden sticky top-6">
+      <div className="pt-1.5 bg-[var(--color-accent)]" />
+      <div className="px-5 py-4">
+        <div className="flex items-baseline justify-between">
+          <p className="text-[15px] font-bold">{TYPE_LABEL[type]}</p>
+          <p className="text-[10px] text-[var(--color-muted)]">ตัวอย่าง</p>
+        </div>
+        <p className="text-[11px] text-[var(--color-muted)] mt-1">{custName || "—"} · {new Date().toLocaleDateString("th-TH")}</p>
+      </div>
+      <div className="px-5 pb-5 space-y-3">
+        <table className="w-full text-[12px]">
+          <tbody>
+            {validItems.length ? validItems.map((it, i) => (
+              <tr key={i} className="border-b border-[var(--color-rule)]">
+                <td className="py-2">{it.description}</td>
+                <td className="py-2 text-right text-[var(--color-muted)] w-12 tabular-nums">×{it.qty}</td>
+                <td className="py-2 text-right w-20 tabular-nums">{fmt(it.unitPrice)}</td>
+              </tr>
+            )) : (
+              <tr><td className="py-4 text-center text-[var(--color-muted)] text-[11px]">พิมพ์รายการทางซ้าย</td></tr>
+            )}
+          </tbody>
+        </table>
+        <div className="flex justify-between items-center pt-1">
+          <span className="text-[11px] text-[var(--color-muted)]">ยอดรวม{taxRate > 0 && ` (รวมภาษี ${fmt(tax)})`}</span>
+          <span className="text-[17px] font-bold text-[var(--color-accent-ink)] tabular-nums">{fmt(subtotal + tax)} ฿</span>
+        </div>
+        {notes && <p className="text-[10px] text-[var(--color-muted)] border-t border-[var(--color-rule)] pt-2">{notes}</p>}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="grid lg:grid-cols-[1fr_minmax(340px,400px)] gap-6 items-start">
+      {formEl}
+      <div className="hidden lg:block">{preview}</div>
+    </div>
   );
 }
