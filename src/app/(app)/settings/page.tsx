@@ -69,6 +69,30 @@ export default async function SettingsPage() {
 
         <button className="btn-accent px-6 py-2 text-[13px] font-medium">บันทึก</button>
       </form>
+
+      {/* เปลี่ยนรหัสผ่าน */}
+      <form
+        action={async (fd) => {
+          "use server";
+          const pw = String(fd.get("newPassword") || "");
+          if (pw.length < 8) return;
+          const { auth: a } = await import("@/lib/auth");
+          const { headers } = await import("next/headers");
+          await a.api.changePassword({ body: { newPassword: pw, currentPassword: String(fd.get("currentPassword") || ""), revokeOtherSessions: true }, headers: await headers() });
+        }}
+        className="card px-4 pt-4 pb-4 space-y-3"
+      >
+        <p className="text-[13px] font-semibold">เปลี่ยนรหัสผ่าน</p>
+        <div className="grid grid-cols-2 gap-3">
+          <label className={label}>รหัสผ่านปัจจุบัน
+            <input name="currentPassword" type="password" required className={input} />
+          </label>
+          <label className={label}>รหัสผ่านใหม่ (8+ ตัว)
+            <input name="newPassword" type="password" required minLength={8} className={input} />
+          </label>
+        </div>
+        <button className="btn-ghost px-6 py-2 text-[13px]">เปลี่ยนรหัสผ่าน</button>
+      </form>
     </div>
   );
 }
