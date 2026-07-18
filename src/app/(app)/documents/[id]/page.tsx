@@ -19,7 +19,7 @@ export default async function DocDetailPage({ params }: { params: Promise<{ id: 
   const owner = session?.user ?? null;
 
   return (
-    <div className="max-w-2xl space-y-4">
+    <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
         <div>
           <h1 className="text-[17px] font-semibold">{TYPE_LABEL[doc.type]} {doc.number}</h1>
