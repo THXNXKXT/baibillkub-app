@@ -12,7 +12,6 @@ const TYPES = [
   { v: "receipt", label: "ใบเสร็จรับเงิน" },
   { v: "delivery_note", label: "ใบส่งของ" },
 ] as const;
-const TYPE_LABEL = Object.fromEntries(TYPES.map((t) => [t.v, t.label]));
 
 type Item = { description: string; qty: number; unitPrice: number };
 const input = "field w-full px-3 py-2 text-[13px]";
@@ -26,12 +25,14 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
   const [newName, setNewName] = useState("");
   const [items, setItems] = useState<Item[]>([{ description: "", qty: 1, unitPrice: 0 }]);
   const [taxRate, setTaxRate] = useState(0);
+  const [discount, setDiscount] = useState(0);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const subtotal = items.reduce((s, i) => s + i.qty * i.unitPrice, 0);
-  const tax = (subtotal * taxRate) / 100;
+  const tax = ((subtotal - discount) * taxRate) / 100;
+  const total = subtotal - discount + tax;
   const setItem = (idx: number, patch: Partial<Item>) => setItems(items.map((it, i) => (i === idx ? { ...it, ...patch } : it)));
   const custName = custMode === "new" ? newName : customers.find((c) => c.id === custId)?.name ?? "";
 
@@ -61,6 +62,7 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
         notes: notes || undefined,
         paymentMethod: (fd.get("paymentMethod") || undefined) as DocInput["paymentMethod"],
         taxRate,
+        discount,
         items: validItems,
       };
       await createDocument(data);
@@ -140,13 +142,17 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
             <span>รวม</span><span className="tabular-nums">{fmt(subtotal)}</span>
           </div>
           <label className="flex justify-between items-center">
+            <span>ส่วนลด</span>
+            <input type="number" min={0} step="0.01" value={discount} onChange={(e) => setDiscount(+e.target.value)} className={`${input} w-24 text-right tabular-nums py-1`} />
+          </label>
+          <label className="flex justify-between items-center">
             <span className="flex items-center gap-1.5">
               <input type="checkbox" checked={taxRate === 7} onChange={(e) => setTaxRate(e.target.checked ? 7 : 0)} /> VAT 7%
             </span>
             <span className="tabular-nums text-[var(--color-muted)]">{fmt(tax)}</span>
           </label>
           <div className="flex justify-between text-[17px] font-bold text-[var(--color-accent-ink)]">
-            <span>ยอดรวม</span><span className="tabular-nums">{fmt(subtotal + tax)} ฿</span>
+            <span>ยอดรวม</span><span className="tabular-nums">{fmt(total)} ฿</span>
           </div>
         </div>
       </div>
@@ -173,7 +179,7 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
   const mockDoc = {
     id: "", userId: "", customerId: "", type: type as never, number: "0000", status: "draft" as const,
     issueDate: new Date(), dueDate: null, notes: notes || null,
-    subtotal: subtotal.toFixed(2), tax: tax.toFixed(2), discount: "0.00", total: (subtotal + tax).toFixed(2),
+    subtotal: subtotal.toFixed(2), tax: tax.toFixed(2), discount: discount.toFixed(2), total: total.toFixed(2),
     paymentMethod: null, publicToken: "", convertedFromId: null, slipImage: null, confirmedAt: null,
     createdAt: new Date(), updatedAt: new Date(),
   };

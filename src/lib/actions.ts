@@ -43,14 +43,15 @@ export type DocInput = {
   dueDate?: Date;
   notes?: string;
   taxRate: number; // 0 หรือ 7
+  discount?: number;
   paymentMethod?: "promptpay" | "cash";
   items: { description: string; qty: number; unitPrice: number }[];
 };
 
-function calc(items: DocInput["items"], taxRate: number) {
+function calc(items: DocInput["items"], taxRate: number, discount = 0) {
   const subtotal = items.reduce((s, i) => s + i.qty * i.unitPrice, 0);
-  const tax = (subtotal * taxRate) / 100;
-  return { subtotal, tax, total: subtotal + tax };
+  const tax = ((subtotal - discount) * taxRate) / 100;
+  return { subtotal, tax, total: subtotal - discount + tax };
 }
 
 export async function createDocument(data: DocInput) {
@@ -63,7 +64,7 @@ export async function createDocument(data: DocInput) {
     .limit(1);
   const seq = last ? parseInt(last.number.split("-")[1]) + 1 : 1;
   const number = `${PREFIX[data.type]}-${String(seq).padStart(4, "0")}`;
-  const { subtotal, tax, total } = calc(data.items, data.taxRate);
+  const { subtotal, tax, total } = calc(data.items, data.taxRate, data.discount);
 
   const [doc] = await db
     .insert(document)
@@ -80,6 +81,7 @@ export async function createDocument(data: DocInput) {
       paymentMethod: data.paymentMethod,
       subtotal: subtotal.toFixed(2),
       tax: tax.toFixed(2),
+      discount: (data.discount ?? 0).toFixed(2),
       total: total.toFixed(2),
       publicToken: nanoid(21),
     })
@@ -150,7 +152,7 @@ async function convert(srcId: string, userId: string, type: "invoice" | "receipt
       number: await nextNumber(userId, type),
       status: type === "receipt" ? "paid" : "draft",
       issueDate: new Date(), notes: src.notes,
-      subtotal: src.subtotal, tax: src.tax, total: src.total,
+      subtotal: src.subtotal, tax: src.tax, discount: src.discount, total: src.total,
       paymentMethod: src.paymentMethod, publicToken: nanoid(21), convertedFromId: src.id,
     })
     .returning();

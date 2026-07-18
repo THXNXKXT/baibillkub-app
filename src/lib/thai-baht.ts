@@ -23,7 +23,7 @@ export function thaiBaht(amount: number | string): string {
   const satang = Math.round((n - baht) * 100);
   const millions = Math.floor(baht / 1e6);
   const rest = baht % 1e6;
-  let words = (millions ? chunk(millions) + "ล้าน" : "") + chunk(rest);
+  const words = (millions ? chunk(millions) + "ล้าน" : "") + chunk(rest);
   if (!satang) return (words || "ศูนย์") + "บาทถ้วน";
   return (words || "") + "บาท" + chunk(satang) + "สตางค์";
 }
