@@ -30,6 +30,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
   const [newAddress, setNewAddress] = useState("");
   const [items, setItems] = useState<Item[]>([{ description: "", qty: 1, unitPrice: 0 }]);
   const [taxRate, setTaxRate] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [discount, setDiscount] = useState(0);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
@@ -64,7 +65,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
         issueDate: new Date(String(fd.get("issueDate"))),
         dueDate: fd.get("dueDate") ? new Date(String(fd.get("dueDate"))) : undefined,
         notes: notes || undefined,
-        paymentMethod: (fd.get("paymentMethod") || undefined) as DocInput["paymentMethod"],
+        paymentMethod: (paymentMethod || undefined) as DocInput["paymentMethod"],
         taxRate,
         discount,
         items: validItems,
@@ -163,7 +164,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
 
       {/* ชำระ + หมายเหตุ */}
       <div className="grid grid-cols-2 gap-3">
-        <select name="paymentMethod" className={input}>
+        <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} className={input}>
           <option value="">วิธีชำระเงิน</option>
           <option value="promptpay">พร้อมเพย์</option>
           <option value="cash">เงินสด</option>
@@ -184,7 +185,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
     id: "", userId: "", customerId: "", type: type as never, number: "0000", status: "draft" as const,
     issueDate: new Date(), dueDate: null, notes: notes || null,
     subtotal: subtotal.toFixed(2), tax: tax.toFixed(2), discount: discount.toFixed(2), total: total.toFixed(2),
-    paymentMethod: null, publicToken: "", convertedFromId: null, slipImage: null, confirmedAt: null,
+    paymentMethod: (paymentMethod || null) as never, publicToken: "", convertedFromId: null, slipImage: null, confirmedAt: null,
     createdAt: new Date(), updatedAt: new Date(),
   };
   const custPreview = custMode === "new"
