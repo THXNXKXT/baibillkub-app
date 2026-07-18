@@ -180,7 +180,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
           </div>
           <label className="flex justify-between items-center">
             <span>ส่วนลด</span>
-            <input type="number" min={0} step="0.01" value={discount} onChange={(e) => setDiscount(+e.target.value)} className={`${input} w-10 text-right tabular-nums py-1`} placeholder="0.00" />
+            <input type="number" min={0} step="0.01" value={discount} onChange={(e) => setDiscount(+e.target.value)} className="field w-20 px-2 py-1 text-[13px] text-right tabular-nums" placeholder="0.00" />
           </label>
           <label className="flex justify-between items-center">
             <span className="flex items-center gap-1.5">
