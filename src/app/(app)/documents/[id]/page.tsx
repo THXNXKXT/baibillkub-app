@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getDocument, confirmPayment, convertDocument, sendDocument } from "@/lib/actions";
+import { getDocument, confirmPayment } from "@/lib/actions";
 import DeleteButton from "./delete-button";
 import PrintButton from "./print-button";
 import { auth } from "@/lib/auth";
@@ -36,6 +36,7 @@ export default async function DocDetailPage({ params }: { params: Promise<{ id: 
           </Link>
           <DocPDFButton doc={doc} cust={cust} owner={owner as never} items={items} />
           <PrintButton />
+          {doc.status === "draft" && <DeleteButton id={doc.id} />}
         </div>
       </div>
 
@@ -52,29 +53,6 @@ export default async function DocDetailPage({ params }: { params: Promise<{ id: 
           <form action={confirmPayment.bind(null, doc.id)}>
             <button className="btn-accent px-4 py-2 font-medium">ยืนยันชำระ (ออกใบเสร็จ)</button>
           </form>
-        )}
-        {doc.type === "invoice" && doc.status !== "paid" && doc.paymentMethod === "cash" && doc.status !== "sent" && (
-          <form action={confirmPayment.bind(null, doc.id)}>
-            <button className="btn-accent px-4 py-2 font-medium">รับเงินสดแล้ว</button>
-          </form>
-        )}
-        {doc.type === "quotation" && doc.status === "accepted" && (
-          <form action={convertDocument.bind(null, doc.id, "invoice")}>
-            <button className="btn-accent px-4 py-2 font-medium">แปลงเป็นใบแจ้งหนี้</button>
-          </form>
-        )}
-        {doc.type === "invoice" && (
-          <form action={convertDocument.bind(null, doc.id, "delivery_note")}>
-            <button className="btn-ghost px-4 py-2">ออกใบส่งของ</button>
-          </form>
-        )}
-        {doc.status === "draft" && (
-          <>
-            <form action={sendDocument.bind(null, doc.id)}>
-              <button className="btn-accent px-4 py-2 font-medium">ส่ง</button>
-            </form>
-            <DeleteButton id={doc.id} />
-          </>
         )}
       </div>
     </div>

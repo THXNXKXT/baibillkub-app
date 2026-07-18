@@ -75,7 +75,7 @@ export async function createDocument(data: DocInput) {
       customerId: data.customerId,
       type: data.type,
       number,
-      status: "draft",
+      status: "sent",
       issueDate: data.issueDate,
       dueDate: data.dueDate,
       notes: data.notes,
@@ -126,7 +126,7 @@ export async function getDocument(id: string) {
 export async function deleteDocument(id: string) {
   const userId = await uid();
   const [d] = await db.select().from(document).where(and(eq(document.id, id), eq(document.userId, userId)));
-  if (!d || d.status !== "draft") throw new Error("ลบได้เฉพาะแบบร่าง");
+  if (!d || d.status === "paid") throw new Error("ลบใบที่ชำระแล้วไม่ได้");
   await db.delete(document).where(eq(document.id, id));
   revalidatePath("/documents");
   redirect("/documents");
