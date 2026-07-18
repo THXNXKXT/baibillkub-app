@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
 
-## Getting Started
+# 🧾 baibillkub
 
-First, run the development server:
+### ใบบิลคับ — "บิลสวย เก็บเงินไว"
+
+เว็บแอปทำเอกสารธุรกิจสำหรับฟรีแลนซ์/ร้านค้าเล็ก — ใบเสนอราคา ใบแจ้งหนี้ ใบเสร็จ ใบส่งของ ส่งลิงก์ให้ลูกค้า สแกนพร้อมเพย์จ่ายได้เลย ไม่ต้องสมัคร
+
+[![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript_5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org)
+[![Better-Auth](https://img.shields.io/badge/Better--Auth-18181B?style=flat-square&logo=authelia&logoColor=white)](https://www.better-auth.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+
+</div>
+
+---
+
+## ✨ Features
+
+| | Feature | Description |
+|---|---------|-------------|
+| 📄 | **เอกสาร 4 ประเภท** | ใบเสนอราคา / ใบแจ้งหนี้ / ใบเสร็จรับเงิน / ใบส่งของ — ตารางเดียว เลขที่รันแยก |
+| 🔗 | **ลิงก์สาธารณะ** | ลูกค้าเปิดลิงก์เห็นบิล ตอบรับ/จ่ายเงินได้ทันที ไม่ต้องสมัครสมาชิก |
+| 💸 | **PromptPay QR ในบิล** | ใส่เลขพร้อมเพย์ครั้งเดียว ทุกบิลมี QR ยอดถูกต้องอัตโนมัติ |
+| 🔁 | **แปลงข้ามเอกสาร** | เสนอราคา → แจ้งหนี้ ปุ่มเดียว; ยืนยันยอดแล้วออกใบเสร็จอัตโนมัติ |
+| 📊 | **Dashboard** | ค้างชำระ / เกินกำหนด / เก็บแล้วเดือนนี้ + เอกสารล่าสุด |
+| 🖨 | **PDF** | ดาวน์โหลดเอกสารเป็น PDF ฟอนต์ไทย Sukhumvit |
+| 👀 | **Live Preview** | ฟอร์มสร้างเอกสารมี preview บิลสดข้างๆ เห็นก่อนบันทึก |
+| 🎨 | **Mascot + ธีมมินต์** | ใบบิลน้อย mascot ธีมเขียวมินต์นุ่มนวล framer-motion |
+
+---
+
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | Next.js 16 (App Router) |
+| **UI** | React 19 + Tailwind CSS v4 + Framer Motion + lucide-react |
+| **Language** | TypeScript 5 (strict) |
+| **Database** | PostgreSQL (Neon) + Drizzle ORM |
+| **Auth** | Better-Auth (email/password) |
+| **QR** | promptpay-qr + qrcode |
+| **PDF** | @react-pdf/renderer (client-only) |
+| **Font** | Sukhumvit Set (local TTF) |
+
+---
+
+## 🚀 Quick Start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# 1. Install
+pnpm install
+
+# 2. Configure environment
+cp .env.example .env.local
+# ใส่ DATABASE_URL (Neon) และ BETTER_AUTH_SECRET
+
+# 3. Migrate
+node scripts/migrate.mjs
+
+# 4. Run
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+→ **http://localhost:3000** → สมัครสมาชิก → ตั้งค่าร้าน (พร้อมเพย์) → สร้างเอกสารแรก
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ⚙️ Environment Variables
 
-## Learn More
+```env
+DATABASE_URL=postgresql://user:***@host/dbname?sslmode=require
+BETTER_AUTH_SECRET=<random 32 chars>
+BETTER_AUTH_URL=http://localhost:3000
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+├── app/
+│   ├── (app)/          # หลัง login — dashboard / documents / customers / settings
+│   ├── b/[token]/      # ลิงก์สาธารณะ (ไม่ต้อง login)
+│   └── api/            # auth + QR
+├── components/         # BillLayout (แชร์ทุกหน้า), mascot, app-shell
+├── db/                 # schema + client
+└── lib/                # actions (server), auth
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<div align="center">
+สร้างด้วย 💚 โดยใบบิลน้อย
+</div>
