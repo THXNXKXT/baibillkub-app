@@ -32,7 +32,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    const t = setTimeout(load, 0);
+    return () => clearTimeout(t);
+  }, [load]);
 
   return <DataCtx.Provider value={{ ...data, reload: load }}>{children}</DataCtx.Provider>;
 }
