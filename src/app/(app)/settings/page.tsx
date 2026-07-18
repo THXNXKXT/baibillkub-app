@@ -6,7 +6,7 @@ export default async function SettingsPage() {
   const label = "block text-[11px] text-[var(--color-muted)]";
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="space-y-6">
       <h1 className="text-[17px] font-semibold">ตั้งค่าร้าน</h1>
       <form
         action={async (fd) => {
