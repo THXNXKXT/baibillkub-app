@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDocument, confirmPayment, convertDocument, deleteDocument } from "@/lib/actions";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import DocPDFButton from "@/components/doc-pdf";
 
 const TYPE_LABEL: Record<string, string> = { quotation: "ใบเสนอราคา", invoice: "ใบแจ้งหนี้", receipt: "ใบเสร็จรับเงิน", delivery_note: "ใบส่งของ" };
 const fmt = (n: string | number) => Number(n).toLocaleString("th-TH", { minimumFractionDigits: 2 });
@@ -10,12 +13,15 @@ export default async function DocDetailPage({ params }: { params: Promise<{ id: 
   const data = await getDocument(id);
   if (!data) notFound();
   const { doc, customer: cust, items } = data;
+  const session = await auth.api.getSession({ headers: await headers() });
+  const owner = session?.user ?? null;
 
   return (
     <div className="p-8 max-w-2xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">{TYPE_LABEL[doc.type]} {doc.number}</h1>
         <Link href={`/b/${doc.publicToken}`} target="_blank" className="text-sm text-emerald-600 hover:underline">ลิงก์สาธารณะ ↗</Link>
+        <DocPDFButton doc={doc} cust={cust} owner={owner as never} items={items} />
       </div>
 
       <div className="bg-white rounded-xl border border-neutral-200 px-4 py-3 text-sm space-y-2">
