@@ -70,7 +70,7 @@ export async function createDocument(data: DocInput) {
     .limit(1);
   const seq = last ? parseInt(last.number.split("-")[1]) + 1 : 1;
   const number = `${PREFIX[data.type]}-${String(seq).padStart(4, "0")}`;
-  const { subtotal, tax, wht, total } = calc(data.items, data.taxRate, data.discount, data.discountType, data.whtRate);
+  const { subtotal, tax, total } = calc(data.items, data.taxRate, data.discount, data.discountType, data.whtRate);
 
   const [doc] = await db
     .insert(document)
