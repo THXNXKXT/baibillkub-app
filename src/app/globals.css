@@ -103,4 +103,5 @@ html, body { overflow-x: clip; }
   main { padding: 0 !important; }
   .card { box-shadow: none !important; border-radius: 0 !important; }
   body { background: #fff; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
