@@ -43,6 +43,7 @@ export type DocInput = {
   issueDate: Date;
   dueDate?: Date;
   notes?: string;
+  terms?: string;
   taxRate: number; // 0 หรือ 7
   discount?: number;
   paymentMethod?: "promptpay" | "cash" | "bank";
@@ -79,6 +80,7 @@ export async function createDocument(data: DocInput) {
       issueDate: data.issueDate,
       dueDate: data.dueDate,
       notes: data.notes,
+      terms: data.terms,
       paymentMethod: data.paymentMethod,
       subtotal: subtotal.toFixed(2),
       tax: tax.toFixed(2),
@@ -153,7 +155,7 @@ async function convert(srcId: string, userId: string, type: "invoice" | "receipt
       id: nanoid(), userId, customerId: src.customerId, type,
       number: await nextNumber(userId, type),
       status: type === "receipt" ? "paid" : "draft",
-      issueDate: new Date(), notes: src.notes,
+      issueDate: new Date(), notes: src.notes, terms: src.terms,
       subtotal: src.subtotal, tax: src.tax, discount: src.discount, total: src.total,
       paymentMethod: src.paymentMethod, publicToken: nanoid(21), convertedFromId: src.id,
     })

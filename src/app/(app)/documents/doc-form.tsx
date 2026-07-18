@@ -21,6 +21,7 @@ const fmt = (n: number) => n.toLocaleString("th-TH", { minimumFractionDigits: 2 
 export default function DocForm({ customers, owner }: { customers: Awaited<ReturnType<typeof listCustomers>>; owner: NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>["user"] }) {
   const router = useRouter();
   const [type, setTypeRaw] = useState<string>("invoice");
+  const [terms, setTerms] = useState("");
   const [notes, setNotes] = useState("");
   const DEFAULT_NOTES: Record<string, string> = {
     quotation: "",
@@ -30,7 +31,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
   };
   function setType(t: string) {
     setTypeRaw(t);
-    setNotes((n) => (Object.values(DEFAULT_NOTES).includes(n) ? DEFAULT_NOTES[t] : n));
+    setTerms((n) => (Object.values(DEFAULT_NOTES).includes(n) ? DEFAULT_NOTES[t] : n));
   }
   const [custMode, setCustMode] = useState<"pick" | "new">(customers.length ? "pick" : "new");
   const [custId, setCustId] = useState("");
@@ -74,6 +75,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
         customerId,
         issueDate: new Date(String(fd.get("issueDate"))),
         dueDate: fd.get("dueDate") ? new Date(String(fd.get("dueDate"))) : undefined,
+        terms: terms || undefined,
         notes: notes || undefined,
         paymentMethod: (paymentMethod || undefined) as DocInput["paymentMethod"],
         taxRate,
@@ -182,7 +184,10 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
             <option value="cash">เงินสด</option>
           </select>
         ) : <span />}
-        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="รายละเอียดเงื่อนไข" rows={1} className={input} />
+        <div className="space-y-2">
+          <textarea value={terms} onChange={(e) => setTerms(e.target.value)} placeholder="รายละเอียดเงื่อนไข" rows={1} className={input} />
+          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="หมายเหตุ" rows={1} className={input} />
+        </div>
       </div>
 
       {error && <p className="text-[12px] text-red-500">{error}</p>}
@@ -196,7 +201,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
   const validItems = items.filter((i) => i.description.trim());
   const mockDoc = {
     id: "", userId: "", customerId: "", type: type as never, number: "0000", status: "draft" as const,
-    issueDate: new Date(), dueDate: null, notes: notes || null,
+    issueDate: new Date(), dueDate: null, terms: terms || null, notes: notes || null,
     subtotal: subtotal.toFixed(2), tax: tax.toFixed(2), discount: discount.toFixed(2), total: total.toFixed(2),
     paymentMethod: (paymentMethod || null) as never, publicToken: "", convertedFromId: null, slipImage: null, confirmedAt: null,
     createdAt: new Date(), updatedAt: new Date(),

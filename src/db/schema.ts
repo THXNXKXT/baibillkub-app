@@ -80,6 +80,7 @@ export const document = pgTable("document", {
   issueDate: timestamp("issue_date").notNull().defaultNow(),
   dueDate: timestamp("due_date"),
   notes: text("notes"),
+  terms: text("terms"),
   subtotal: numeric("subtotal", { precision: 12, scale: 2 }).notNull().default("0"),
   tax: numeric("tax", { precision: 12, scale: 2 }).notNull().default("0"),
   discount: numeric("discount", { precision: 12, scale: 2 }).notNull().default("0"),

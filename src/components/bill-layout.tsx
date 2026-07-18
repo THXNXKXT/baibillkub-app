@@ -101,7 +101,10 @@ export default function BillLayout({ doc, cust, owner, items }: { doc: Doc; cust
             {doc.paymentMethod === "cash" && <p>เงินสด</p>}
           </div>
         )}
-        <div>{doc.notes && <p className="text-[var(--color-muted)]">{doc.notes}</p>}</div>
+        <div>
+          {doc.terms && <p className="text-[var(--color-muted)]">{doc.terms}</p>}
+          {doc.notes && <p className="text-[var(--color-muted)] mt-1">หมายเหตุ: {doc.notes}</p>}
+        </div>
         <div className="text-center space-y-0.5 self-end">
           <p className="mt-8">({owner?.name})</p>
           <p>ผู้มีอำนาจลงนาม</p>
