@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createDocument, createCustomer, listCustomers, type DocInput } from "@/lib/actions";
+import type { auth } from "@/lib/auth";
 import { Plus, Trash2 } from "lucide-react";
 import BillLayout from "@/components/bill-layout";
 
@@ -17,7 +18,7 @@ type Item = { description: string; qty: number; unitPrice: number };
 const input = "field w-full px-3 py-2 text-[13px]";
 const fmt = (n: number) => n.toLocaleString("th-TH", { minimumFractionDigits: 2 });
 
-export default function DocForm({ customers }: { customers: Awaited<ReturnType<typeof listCustomers>> }) {
+export default function DocForm({ customers, owner }: { customers: Awaited<ReturnType<typeof listCustomers>>; owner: NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>["user"] }) {
   const router = useRouter();
   const [type, setType] = useState<string>("invoice");
   const [custMode, setCustMode] = useState<"pick" | "new">(customers.length ? "pick" : "new");
@@ -194,7 +195,7 @@ export default function DocForm({ customers }: { customers: Awaited<ReturnType<t
       <BillLayout
         doc={mockDoc}
         cust={custPreview && custPreview.name ? custPreview as never : null}
-        owner={null}
+        owner={owner as never}
         items={validItems.map((it, i) => ({ id: String(i), documentId: "", description: it.description, qty: String(it.qty), unitPrice: it.unitPrice.toFixed(2) }))}
       />
     </div>
