@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createDocument, createCustomer, type DocInput } from "@/lib/actions";
+import { createDocument, createCustomer, listCustomers, type DocInput } from "@/lib/actions";
 import { Plus, Trash2 } from "lucide-react";
 import BillLayout from "@/components/bill-layout";
 
@@ -17,12 +17,16 @@ type Item = { description: string; qty: number; unitPrice: number };
 const input = "field w-full px-3 py-2 text-[13px]";
 const fmt = (n: number) => n.toLocaleString("th-TH", { minimumFractionDigits: 2 });
 
-export default function DocForm({ customers }: { customers: { id: string; name: string }[] }) {
+export default function DocForm({ customers }: { customers: Awaited<ReturnType<typeof listCustomers>> }) {
   const router = useRouter();
   const [type, setType] = useState<string>("invoice");
   const [custMode, setCustMode] = useState<"pick" | "new">(customers.length ? "pick" : "new");
   const [custId, setCustId] = useState("");
   const [newName, setNewName] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newPhone, setNewPhone] = useState("");
+  const [newTaxId, setNewTaxId] = useState("");
+  const [newAddress, setNewAddress] = useState("");
   const [items, setItems] = useState<Item[]>([{ description: "", qty: 1, unitPrice: 0 }]);
   const [taxRate, setTaxRate] = useState(0);
   const [discount, setDiscount] = useState(0);
@@ -34,7 +38,6 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
   const tax = ((subtotal - discount) * taxRate) / 100;
   const total = subtotal - discount + tax;
   const setItem = (idx: number, patch: Partial<Item>) => setItems(items.map((it, i) => (i === idx ? { ...it, ...patch } : it)));
-  const custName = custMode === "new" ? newName : customers.find((c) => c.id === custId)?.name ?? "";
 
   async function submit(fd: FormData) {
     setError("");
@@ -46,10 +49,10 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
       if (custMode === "new") {
         const c = await createCustomer({
           name: newName,
-          email: String(fd.get("newEmail") || "") || undefined,
-          phone: String(fd.get("newPhone") || "") || undefined,
-          taxId: String(fd.get("newTaxId") || "") || undefined,
-          address: String(fd.get("newAddress") || "") || undefined,
+          email: newEmail || undefined,
+          phone: newPhone || undefined,
+          taxId: newTaxId || undefined,
+          address: newAddress || undefined,
         });
         customerId = c.id;
       }
@@ -103,10 +106,10 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
         ) : (
           <div className="grid grid-cols-2 gap-2">
             <input value={newName} onChange={(e) => setNewName(e.target.value)} required placeholder="ชื่อลูกค้า *" className={`${input} col-span-2`} />
-            <input name="newEmail" placeholder="อีเมล" className={input} />
-            <input name="newPhone" placeholder="เบอร์โทร" className={input} />
-            <input name="newTaxId" placeholder="เลขผู้เสียภาษี" className={`${input} col-span-2 tabular-nums`} />
-            <textarea name="newAddress" placeholder="ที่อยู่ (พิมพ์ในบิล)" rows={2} className={`${input} col-span-2`} />
+            <input value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder="อีเมล" className={input} />
+            <input value={newPhone} onChange={(e) => setNewPhone(e.target.value)} placeholder="เบอร์โทร" className={input} />
+            <input value={newTaxId} onChange={(e) => setNewTaxId(e.target.value)} placeholder="เลขผู้เสียภาษี" className={`${input} col-span-2 tabular-nums`} />
+            <textarea value={newAddress} onChange={(e) => setNewAddress(e.target.value)} placeholder="ที่อยู่ (พิมพ์ในบิล)" rows={2} className={`${input} col-span-2`} />
           </div>
         )}
       </div>
@@ -183,11 +186,14 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
     paymentMethod: null, publicToken: "", convertedFromId: null, slipImage: null, confirmedAt: null,
     createdAt: new Date(), updatedAt: new Date(),
   };
+  const custPreview = custMode === "new"
+    ? { id: "", userId: "", name: newName, email: newEmail || null, phone: newPhone || null, address: newAddress || null, taxId: newTaxId || null, createdAt: new Date() }
+    : customers.find((c) => c.id === custId) ?? null;
   const preview = (
     <div className="card rounded-2xl overflow-hidden sticky top-6">
       <BillLayout
         doc={mockDoc}
-        cust={custName ? { id: "", userId: "", name: custName, email: null, phone: null, address: null, taxId: null, createdAt: new Date() } : null}
+        cust={custPreview && custPreview.name ? custPreview as never : null}
         owner={null}
         items={validItems.map((it, i) => ({ id: String(i), documentId: "", description: it.description, qty: String(it.qty), unitPrice: it.unitPrice.toFixed(2) }))}
       />
