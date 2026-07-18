@@ -1,28 +1,99 @@
 @import "tailwindcss";
 
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4
+ * genre: playful · macrostructure: Narrative Workflow (landing) · theme: custom (mint, Hum-leaning)
+ * vibe: "soft mint, friendly, exact" · paper oklch(98% 0.008 155) · accent oklch(62% 0.17 160) green
+ * display: Sukhumvit 700 · body: Sukhumvit 400 (font IS the brand — single face allowed per typography.md)
+ */
+
 @font-face {
   font-family: "Sukhumvit";
   src: url("/fonts/SukhumvitSet-Text.ttf");
   font-weight: 400;
+  font-display: swap;
 }
 @font-face {
   font-family: "Sukhumvit";
   src: url("/fonts/SukhumvitSet-Bold.ttf");
   font-weight: 700;
-}
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+  font-display: swap;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-paper: oklch(98% 0.008 155);
+  --color-paper-2: oklch(95.5% 0.02 155);
+  --color-surface: oklch(99.5% 0.003 155);
+  --color-rule: oklch(90% 0.015 155);
+  --color-muted: oklch(48% 0.01 155);
+  --color-ink: oklch(19% 0.015 160);
+  --color-accent: oklch(62% 0.17 160);
+  --color-accent-ink: oklch(35% 0.1 165);
+  --color-accent-soft: oklch(94% 0.05 158);
+  --radius-card: 12px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  --background: var(--color-paper);
+  --foreground: var(--color-ink);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: "Sukhumvit", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+html, body { overflow-x: clip; }
+
+.tabular-nums { font-variant-numeric: tabular-nums; }
+
+/* การ์ด borderless ลอยบน paper (playful: soft shadow ไม่เกิน 12px radius) */
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+  box-shadow: 0 1px 2px oklch(19% 0.015 160 / 0.04), 0 8px 24px -10px oklch(62% 0.17 160 / 0.18);
+}
+.card-hover {
+  transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px oklch(19% 0.015 160 / 0.05), 0 12px 32px -10px oklch(62% 0.17 160 / 0.25);
+}
+
+.btn-accent {
+  background: var(--color-accent);
+  color: var(--color-surface);
+  border-radius: 999px;
+  transition: background-color 150ms var(--ease-out), transform 100ms var(--ease-out);
+}
+.btn-accent:hover { background: var(--color-accent-ink); }
+.btn-accent:active { transform: translateY(1px); }
+.btn-accent:focus-visible { outline: 2px solid var(--color-accent-ink); outline-offset: 2px; }
+
+.btn-ghost {
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  color: var(--color-muted);
+  transition: border-color 150ms var(--ease-out), color 150ms var(--ease-out);
+}
+.btn-ghost:hover { border-color: var(--color-accent); color: var(--color-accent-ink); }
+.btn-ghost:focus-visible { outline: 2px solid var(--color-accent-ink); outline-offset: 2px; }
+
+.field {
+  background: var(--color-surface);
+  border: 1px solid var(--color-rule);
+  border-radius: 8px;
+  transition: border-color 150ms var(--ease-out);
+}
+.field:focus { border-color: var(--color-accent); outline: none; }
+
+.chip-active { background: var(--color-accent-soft); color: var(--color-accent-ink); font-weight: 700; }
+.chip { color: var(--color-muted); border-radius: 999px; }
+.chip:hover { color: var(--color-accent-ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
