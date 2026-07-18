@@ -5,9 +5,9 @@ import { motion } from "framer-motion";
 export default function Loading() {
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.15 }}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       className="space-y-6"
     >
       <div className="h-6 w-32 rounded bg-[var(--color-rule)]" />
