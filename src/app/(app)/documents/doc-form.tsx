@@ -204,8 +204,8 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
             {discOn && (
               <span className="flex items-center gap-2">
                 <span className="flex gap-1 text-[11px]">
-                  <button type="button" onClick={() => setDiscountType("amount")} className={`px-2 py-0.5 rounded-full ${discountType === "amount" ? "chip-active" : "chip"}`}>จำนวน</button>
-                  <button type="button" onClick={() => setDiscountType("percent")} className={`px-2 py-0.5 rounded-full ${discountType === "percent" ? "chip-active" : "chip"}`}>%</button>
+                  <button type="button" onClick={() => setDiscountType("amount")} className={`px-2 py-0.5 rounded-md ${discountType === "amount" ? "chip-active" : "chip"}`}>จำนวน</button>
+                  <button type="button" onClick={() => setDiscountType("percent")} className={`px-2 py-0.5 rounded-md ${discountType === "percent" ? "chip-active" : "chip"}`}>%</button>
                 </span>
                 <input type="number" min={0} step="0.01" value={discount} onChange={(e) => setDiscount(+e.target.value)} className="field w-20 px-2 py-1 text-[13px] text-right tabular-nums" placeholder="0.00" />
               </span>
@@ -227,7 +227,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
               <span className="flex items-center gap-2">
                 <span className="flex gap-1 text-[11px]">
                   {[1, 3, 5].map((r) => (
-                    <button key={r} type="button" onClick={() => setWhtRate(r)} className={`px-2 py-0.5 rounded-full ${whtRate === r ? "chip-active" : "chip"}`}>{r}%</button>
+                    <button key={r} type="button" onClick={() => setWhtRate(r)} className={`px-2 py-0.5 rounded-md ${whtRate === r ? "chip-active" : "chip"}`}>{r}%</button>
                   ))}
                 </span>
                 <span className="tabular-nums text-[var(--color-muted)]">{fmt(wht)}</span>
