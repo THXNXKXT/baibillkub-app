@@ -139,14 +139,16 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
           </label>
         </div>
         {(type === "invoice" || type === "quotation") && (
-          <label className="text-[11px] text-[var(--color-muted)]">ช่องทางการชำระเงิน
-            <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} className={input}>
-              <option value="">ไม่ระบุ (ปล่อยว่าง)</option>
-              <option value="promptpay">พร้อมเพย์</option>
-              <option value="bank">โอนธนาคาร</option>
-              <option value="cash">เงินสด</option>
-            </select>
-          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <label className="text-[11px] text-[var(--color-muted)]">ช่องทางการชำระเงิน
+              <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} className={input}>
+                <option value="">ไม่ระบุ (ปล่อยว่าง)</option>
+                <option value="promptpay">พร้อมเพย์</option>
+                <option value="bank">โอนธนาคาร</option>
+                <option value="cash">เงินสด</option>
+              </select>
+            </label>
+          </div>
         )}
         <div className="grid grid-cols-2 gap-3">
           <textarea value={terms} onChange={(e) => setTerms(e.target.value)} placeholder="รายละเอียดเงื่อนไข" rows={2} className={input} />
@@ -178,7 +180,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
           </div>
           <label className="flex justify-between items-center">
             <span>ส่วนลด</span>
-            <input type="number" min={0} step="0.01" value={discount} onChange={(e) => setDiscount(+e.target.value)} className={`${input} w-24 text-right tabular-nums py-1`} placeholder="0.00" />
+            <input type="number" min={0} step="0.01" value={discount} onChange={(e) => setDiscount(+e.target.value)} className={`${input} w-20 text-right tabular-nums py-1`} placeholder="0.00" />
           </label>
           <label className="flex justify-between items-center">
             <span className="flex items-center gap-1.5">
