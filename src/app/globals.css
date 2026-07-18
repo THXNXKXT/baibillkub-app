@@ -26,8 +26,8 @@
   --color-rule: oklch(90% 0.015 155);
   --color-muted: oklch(48% 0.01 155);
   --color-ink: oklch(19% 0.015 160);
-  --color-accent: oklch(62% 0.17 160);
-  --color-accent-ink: oklch(35% 0.1 165);
+  --color-accent: oklch(72% 0.14 158);
+  --color-accent-ink: oklch(42% 0.1 162);
   --color-accent-soft: oklch(94% 0.05 158);
   --radius-card: 12px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
