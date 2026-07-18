@@ -10,7 +10,7 @@ export default async function NewDocumentPage() {
   const [customers, session] = await Promise.all([listCustomers(), auth.api.getSession({ headers: await headers() })]);
   const [owner] = await db.select().from(user).where(eq(user.id, session!.user.id));
   return (
-    <div className="max-w-5xl space-y-6">
+    <div className="space-y-6">
       <h1 className="text-[17px] font-semibold">สร้างเอกสาร</h1>
       <DocForm customers={customers} owner={owner as never} />
     </div>

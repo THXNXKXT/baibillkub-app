@@ -223,7 +223,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
   );
 
   return (
-    <div className="grid lg:grid-cols-[1fr_minmax(420px,480px)] gap-6 items-start">
+    <div className="grid lg:grid-cols-[1fr_minmax(480px,560px)] gap-6 items-start">
       {formEl}
       <div className="hidden lg:block">{preview}</div>
     </div>
