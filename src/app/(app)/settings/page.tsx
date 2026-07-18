@@ -1,16 +1,22 @@
-import { getSettings, saveSettings } from "@/lib/actions";
+"use client";
 
-export default async function SettingsPage() {
-  const u = await getSettings();
+import { saveSettings } from "@/lib/actions";
+import { useAppData } from "@/components/data-provider";
+
+export default function SettingsPage() {
+  const { settings: u, loading, reload } = useAppData();
   const input = "field w-full px-3 py-2 text-[13px]";
   const label = "block text-[11px] text-[var(--color-muted)]";
+
+  if (loading || !u) {
+    return <div className="card px-4 py-6"><div className="h-3 w-40 rounded bg-[var(--color-rule)]" /></div>;
+  }
 
   return (
     <div className="space-y-6">
       <h1 className="text-[17px] font-semibold">ตั้งค่าร้าน</h1>
       <form
         action={async (fd) => {
-          "use server";
           await saveSettings({
             shopName: String(fd.get("shopName") || "") || undefined,
             taxId: String(fd.get("taxId") || "") || undefined,
@@ -22,6 +28,7 @@ export default async function SettingsPage() {
             bankAccount: String(fd.get("bankAccount") || "") || undefined,
             bankAccountName: String(fd.get("bankAccountName") || "") || undefined,
           });
+          reload();
         }}
         className="card px-4 pt-4 pb-4 space-y-4"
       >
@@ -73,7 +80,6 @@ export default async function SettingsPage() {
       {/* เปลี่ยนรหัสผ่าน */}
       <form
         action={async (fd) => {
-          "use server";
           const pw = String(fd.get("newPassword") || "");
           if (pw.length < 8) return;
           const { auth: a } = await import("@/lib/auth");
