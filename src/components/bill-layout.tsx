@@ -39,7 +39,7 @@ export default function BillLayout({ doc, cust, owner, items }: { doc: Doc; cust
           <p className="font-semibold">{owner?.shopName || owner?.name}</p>
           {owner?.address && <p>{owner.address}</p>}
           {owner?.taxId && <p className="tabular-nums">ภาษี {owner.taxId}</p>}
-          {owner?.phone && <p className="tabular-nums">{owner.phone}</p>}
+          {owner?.phone && <p className="tabular-nums">โทร.{owner.phone}</p>}
         </div>
       </div>
 
