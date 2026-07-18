@@ -194,7 +194,7 @@ export async function getSettings() {
   return u;
 }
 
-export async function saveSettings(data: { shopName?: string; promptpayId?: string; taxId?: string; address?: string; phone?: string }) {
+export async function saveSettings(data: { shopName?: string; promptpayId?: string; promptpayName?: string; taxId?: string; address?: string; phone?: string }) {
   const userId = await uid();
   await db.update(user).set(data).where(eq(user.id, userId));
   revalidatePath("/settings");

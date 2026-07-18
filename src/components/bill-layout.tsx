@@ -85,7 +85,7 @@ export default function BillLayout({ doc, cust, owner, items }: { doc: Doc; cust
         <div className="space-y-0.5">
           <p className="font-semibold underline underline-offset-2 mb-1.5">ช่องทางการชำระเงิน</p>
           <p>ชื่อบัญชี : {owner?.shopName || owner?.name}</p>
-          {owner?.promptpayId && <p className="tabular-nums">พร้อมเพย์ : {owner.promptpayId}</p>}
+          {owner?.promptpayId && <p className="tabular-nums">พร้อมเพย์ : {owner.promptpayId}{owner.promptpayName && ` (${owner.promptpayName})`}</p>}
           {doc.notes && <p className="text-[var(--color-muted)] pt-1">{doc.notes}</p>}
         </div>
         <div className="text-center space-y-0.5 self-end">

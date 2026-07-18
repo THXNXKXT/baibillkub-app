@@ -13,6 +13,7 @@ export const user = pgTable("user", {
   shopName: text("shop_name"),
   logo: text("logo"),
   promptpayId: text("promptpay_id"),
+  promptpayName: text("promptpay_name"),
   taxId: text("tax_id"),
   address: text("address"),
   phone: text("phone"),
