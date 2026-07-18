@@ -18,6 +18,9 @@ export default async function SettingsPage() {
             phone: String(fd.get("phone") || "") || undefined,
             promptpayId: String(fd.get("promptpayId") || "") || undefined,
             promptpayName: String(fd.get("promptpayName") || "") || undefined,
+            bankName: String(fd.get("bankName") || "") || undefined,
+            bankAccount: String(fd.get("bankAccount") || "") || undefined,
+            bankAccountName: String(fd.get("bankAccountName") || "") || undefined,
           });
         }}
         className="card px-4 pt-4 pb-4 space-y-4"
@@ -45,6 +48,21 @@ export default async function SettingsPage() {
             </label>
             <label className={label}>ชื่อบัญชีพร้อมเพย์
               <input name="promptpayName" defaultValue={u.promptpayName ?? ""} placeholder="ถ้าว่างจะใช้ชื่อร้าน" className={input} />
+            </label>
+          </div>
+        </div>
+
+        <div className="border-t border-[var(--color-rule)] pt-4 space-y-3">
+          <p className="text-[13px] font-semibold">บัญชีธนาคาร</p>
+          <div className="grid grid-cols-2 gap-3">
+            <label className={label}>ธนาคาร
+              <input name="bankName" defaultValue={u.bankName ?? ""} placeholder="กสิกรไทย / ไทยพาณิชย์ …" className={input} />
+            </label>
+            <label className={label}>เลขบัญชี
+              <input name="bankAccount" defaultValue={u.bankAccount ?? ""} className={`${input} tabular-nums`} />
+            </label>
+            <label className={`${label} col-span-2`}>ชื่อบัญชี
+              <input name="bankAccountName" defaultValue={u.bankAccountName ?? ""} placeholder="ถ้าว่างจะใช้ชื่อร้าน" className={input} />
             </label>
           </div>
         </div>
