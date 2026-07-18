@@ -17,13 +17,13 @@ function CustomerRow({ c }: { c: Cust }) {
         <ChevronDown className={`w-4 h-4 text-[var(--color-muted)] transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div className="px-4 pb-4 pt-1 grid sm:grid-cols-2 gap-x-6 gap-y-1 text-[12px] border-t border-[var(--color-rule)] bg-[var(--color-paper-2)]">
-          {c.phone && <p className="tabular-nums">โทร.{c.phone}</p>}
-          {c.email && <p>{c.email}</p>}
-          {c.taxId && <p className="tabular-nums">ภาษี {c.taxId}</p>}
-          {c.address && <p className="sm:col-span-2 whitespace-pre-line text-[var(--color-muted)]">{c.address}</p>}
-          <form action={deleteCustomer.bind(null, c.id)} className="sm:col-span-2 pt-1">
-            <button className="text-[11px] text-red-500 hover:underline">ลบลูกค้า</button>
+        <div className="px-4 pb-3 pt-2 flex items-start gap-x-6 gap-y-1 flex-wrap text-[12px] text-[var(--color-muted)] border-t border-[var(--color-rule)]">
+          {c.phone && <span className="tabular-nums">โทร.{c.phone}</span>}
+          {c.email && <span>{c.email}</span>}
+          {c.taxId && <span className="tabular-nums">ภาษี {c.taxId}</span>}
+          {c.address && <span className="whitespace-pre-line">{c.address}</span>}
+          <form action={deleteCustomer.bind(null, c.id)} className="ml-auto">
+            <button className="text-[11px] text-red-500 hover:underline">ลบ</button>
           </form>
         </div>
       )}
