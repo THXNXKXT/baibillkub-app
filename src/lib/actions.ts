@@ -175,6 +175,12 @@ export async function confirmPayment(id: string) {
   revalidatePath("/documents");
 }
 
+export async function sendDocument(id: string) {
+  const userId = await uid();
+  await db.update(document).set({ status: "sent" }).where(and(eq(document.id, id), eq(document.userId, userId)));
+  revalidatePath("/documents");
+}
+
 export async function markPaid(id: string) {
   return confirmPayment(id);
 }

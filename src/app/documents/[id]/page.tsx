@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getDocument, confirmPayment, convertDocument, deleteDocument } from "@/lib/actions";
+import { getDocument, confirmPayment, convertDocument, deleteDocument, sendDocument } from "@/lib/actions";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import DocPDFButton from "@/components/doc-pdf";
@@ -58,9 +58,14 @@ export default async function DocDetailPage({ params }: { params: Promise<{ id: 
           </form>
         )}
         {doc.status === "draft" && (
-          <form action={deleteDocument.bind(null, doc.id)}>
-            <button className="rounded-lg border border-red-200 text-red-500 px-4 py-2">ลบ</button>
-          </form>
+          <>
+            <form action={sendDocument.bind(null, doc.id)}>
+              <button className="rounded-lg bg-emerald-500 text-white px-4 py-2 font-medium">ส่ง</button>
+            </form>
+            <form action={deleteDocument.bind(null, doc.id)}>
+              <button className="rounded-lg border border-red-200 text-red-500 px-4 py-2">ลบ</button>
+            </form>
+          </>
         )}
       </div>
     </div>
