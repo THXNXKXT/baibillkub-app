@@ -20,7 +20,10 @@ Next.js 16 (App Router) + Drizzle (Neon) + Better-Auth + Tailwind v4 + framer-mo
 - `customer` — userId, name, email, phone, address
 - `document` — userId, customerId, type, number, status (draft|sent|paid|accepted|rejected|cancelled), issueDate, dueDate, notes, subtotal, tax, total, paymentMethod (promptpay|cash), publicToken (nanoid 21), convertedFromId, slipImage (base64), confirmedAt
 - `document_item` — documentId, description, qty, unitPrice
-- `settings` (หรือ columns บน user) — shopName, logo (base64), promptpayId
+- `settings` columns บน user — shopName, logo (base64), promptpayId (ไม่มีตารางแยก)
+
+## DB
+Neon (serverless postgres) + drizzle-kit migrate
 
 ## Flow ชำระเงิน (MVP)
 - PromptPay: QR จาก promptpay-qr + qrcode lib → ลูกค้าสแกน → กดแจ้งชำระ (แนบสลิป optional) → เจ้าของยืนยัน → paid → ออก receipt
