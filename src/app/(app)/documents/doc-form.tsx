@@ -193,7 +193,6 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
         </button>
         {/* การคำนวณ */}
         <div className="border-t border-[var(--color-rule)] pt-3 space-y-3 text-[13px]">
-          <p className="text-[11px] font-semibold text-[var(--color-muted)] uppercase tracking-[0.08em]">การคำนวณ</p>
           <div className="flex justify-between text-[var(--color-muted)]">
             <span>รวม</span><span className="tabular-nums">{fmt(subtotal)}</span>
           </div>
