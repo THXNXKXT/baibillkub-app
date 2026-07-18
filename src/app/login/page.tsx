@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Mascot from "@/components/mascot";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -36,24 +37,25 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[var(--color-accent-soft)] to-[var(--color-paper)] px-4">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-lg p-8">
-        <h1 className="text-2xl font-bold text-[var(--color-accent)] mb-1">baibillkub</h1>
-        <p className="text-sm text-[var(--color-muted)] mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--color-paper)] px-4">
+      <div className="w-full max-w-sm text-center">
+        <Mascot className="w-16 h-16 mx-auto" />
+        <h1 className="text-[22px] font-bold mt-3">baibillkub</h1>
+        <p className="text-[13px] text-[var(--color-muted)] mb-6">
           {mode === "login" ? "เข้าสู่ระบบเพื่อจัดการเอกสาร" : "สมัครสมาชิกฟรี"}
         </p>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-3 text-left">
           {mode === "signup" && (
-            <input name="name" required placeholder="ชื่อ" className="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-[var(--color-accent)]" />
+            <input name="name" required placeholder="ชื่อ" className="field w-full px-3 py-2.5 text-[13px]" />
           )}
-          <input name="email" type="email" required placeholder="อีเมล" className="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-[var(--color-accent)]" />
-          <input name="password" type="password" required minLength={8} placeholder="รหัสผ่าน (8+ ตัว)" className="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm outline-none focus:border-[var(--color-accent)]" />
-          {error && <p className="text-sm text-red-500">{error}</p>}
-          <button disabled={loading} className="w-full rounded-lg bg-[var(--color-accent)] text-white py-2 text-sm font-medium hover:bg-[var(--color-accent-ink)] disabled:opacity-50">
-            {loading ? "กำลังโหลด..." : mode === "login" ? "เข้าสู่ระบบ" : "สมัครสมาชิก"}
+          <input name="email" type="email" required placeholder="อีเมล" className="field w-full px-3 py-2.5 text-[13px]" />
+          <input name="password" type="password" required minLength={8} placeholder="รหัสผ่าน (8+ ตัว)" className="field w-full px-3 py-2.5 text-[13px]" />
+          {error && <p className="text-[12px] text-red-500">{error}</p>}
+          <button disabled={loading} className="btn-accent w-full py-2.5 text-[13px] font-medium disabled:opacity-50">
+            {loading ? "กำลังโหลด…" : mode === "login" ? "เข้าสู่ระบบ" : "สมัครสมาชิก"}
           </button>
         </form>
-        <button onClick={() => setMode(mode === "login" ? "signup" : "login")} className="mt-4 w-full text-center text-sm text-[var(--color-muted)] hover:text-[var(--color-accent)]">
+        <button onClick={() => setMode(mode === "login" ? "signup" : "login")} className="mt-4 text-[12px] text-[var(--color-muted)] hover:text-[var(--color-accent-ink)] transition-colors">
           {mode === "login" ? "ยังไม่มีบัญชี? สมัครเลย" : "มีบัญชีแล้ว? เข้าสู่ระบบ"}
         </button>
       </div>

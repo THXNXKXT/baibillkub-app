@@ -1,4 +1,5 @@
 import { listCustomers, createCustomer, deleteCustomer } from "@/lib/actions";
+import Mascot from "@/components/mascot";
 
 export default async function CustomersPage() {
   const customers = await listCustomers();
@@ -22,8 +23,9 @@ export default async function CustomersPage() {
         <button className="btn-accent px-4 py-2 text-[13px] font-medium whitespace-nowrap">เพิ่ม</button>
       </form>
       {customers.length === 0 ? (
-        <div className="card px-6 py-10 text-center">
-          <p className="text-[13px] text-[var(--color-muted)]">ยังไม่มีลูกค้า</p>
+        <div className="card px-6 py-12 text-center">
+          <Mascot className="w-16 h-16 mx-auto opacity-60" />
+          <p className="text-[13px] text-[var(--color-muted)] mt-3">ยังไม่มีลูกค้า</p>
         </div>
       ) : (
         <ul className="card divide-y divide-[var(--color-rule)]">

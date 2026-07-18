@@ -4,6 +4,7 @@ import { getDocument, confirmPayment, convertDocument, deleteDocument, sendDocum
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import DocPDFButton from "@/components/doc-pdf";
+import { ExternalLink } from "lucide-react";
 
 const TYPE_LABEL: Record<string, string> = { quotation: "ใบเสนอราคา", invoice: "ใบแจ้งหนี้", receipt: "ใบเสร็จรับเงิน", delivery_note: "ใบส่งของ" };
 const STATUS_LABEL: Record<string, string> = { draft: "ร่าง", sent: "รอชำระ", paid: "ชำระแล้ว", accepted: "ตกลง", rejected: "ไม่ตกลง", cancelled: "ยกเลิก" };
@@ -25,27 +26,34 @@ export default async function DocDetailPage({ params }: { params: Promise<{ id: 
           <p className="text-[11px] text-[var(--color-muted)]">{STATUS_LABEL[doc.status]} · {cust?.name}</p>
         </div>
         <div className="flex gap-2 items-center">
-          <Link href={`/b/${doc.publicToken}`} target="_blank" className="btn-ghost px-3 py-1.5 text-[11px]">ลิงก์ ↗</Link>
+          <Link href={`/b/${doc.publicToken}`} target="_blank" className="btn-ghost px-3 py-1.5 text-[11px] flex items-center gap-1">
+            <ExternalLink className="w-3.5 h-3.5" /> ลิงก์
+          </Link>
           <DocPDFButton doc={doc} cust={cust} owner={owner as never} items={items} />
         </div>
       </div>
 
-      <div className="card px-4 pt-4 pb-5 text-[13px] space-y-2">
-        {items.map((i) => (
-          <div key={i.id} className="flex justify-between">
-            <span>{i.description} <span className="text-[var(--color-muted)]">×{Number(i.qty)}</span></span>
-            <span className="tabular-nums">{fmt(i.unitPrice)}</span>
+      <div className="card overflow-hidden">
+        <div className="pt-1.5 bg-[var(--color-accent)]" />
+        <div className="px-4 pt-4 pb-5 text-[13px] space-y-2">
+          {items.map((i) => (
+            <div key={i.id} className="flex justify-between">
+              <span>{i.description} <span className="text-[var(--color-muted)] tabular-nums">×{Number(i.qty)}</span></span>
+              <span className="tabular-nums">{fmt(i.unitPrice)}</span>
+            </div>
+          ))}
+          <div className="border-t border-[var(--color-rule)] pt-2 flex justify-between items-center">
+            <span className="text-[12px] text-[var(--color-muted)]">
+              ยอดรวม{Number(doc.tax) > 0 && ` (รวมภาษี ${fmt(doc.tax)})`}
+            </span>
+            <span className="text-[17px] font-bold text-[var(--color-accent-ink)] tabular-nums">{fmt(doc.total)} ฿</span>
           </div>
-        ))}
-        <div className="border-t border-[var(--color-rule)] pt-2 text-right space-y-0.5">
-          {Number(doc.tax) > 0 && <p className="text-[var(--color-muted)] tabular-nums">ภาษี {fmt(doc.tax)}</p>}
-          <p className="text-[17px] font-semibold text-[var(--color-accent-ink)] tabular-nums">{fmt(doc.total)} ฿</p>
+          {doc.notes && <p className="text-[11px] text-[var(--color-muted)] border-t border-[var(--color-rule)] pt-2">{doc.notes}</p>}
+          {doc.slipImage && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={doc.slipImage} alt="สลิป" className="w-40 rounded-lg border border-[var(--color-rule)]" />
+          )}
         </div>
-        {doc.notes && <p className="text-[11px] text-[var(--color-muted)] border-t border-[var(--color-rule)] pt-2">{doc.notes}</p>}
-        {doc.slipImage && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={doc.slipImage} alt="สลิป" className="w-40 rounded-lg border border-[var(--color-rule)]" />
-        )}
       </div>
 
       <div className="flex flex-wrap gap-2 text-[13px]">
