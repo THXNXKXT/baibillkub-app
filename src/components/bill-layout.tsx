@@ -82,7 +82,7 @@ export default function BillLayout({ doc, cust, owner, items }: { doc: Doc; cust
 
       {/* footer */}
       <div className="grid grid-cols-2 gap-6 px-6 mt-5 pb-6 text-[11px]">
-        {doc.type === "invoice" && (
+        {(doc.type === "invoice" || doc.type === "quotation") && doc.paymentMethod && (
           <div className="space-y-0.5">
             <p className="font-semibold underline underline-offset-2 mb-1.5">ช่องทางการชำระเงิน</p>
             {doc.paymentMethod === "promptpay" && owner?.promptpayId && (

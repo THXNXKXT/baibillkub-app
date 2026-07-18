@@ -174,7 +174,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
 
       {/* ชำระ (เฉพาะ invoice) + หมายเหตุ */}
       <div className="grid grid-cols-2 gap-3">
-        {type === "invoice" ? (
+        {type === "invoice" || type === "quotation" ? (
           <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)} className={input}>
             <option value="">ไม่ระบุ (ปล่อยว่าง)</option>
             <option value="promptpay">พร้อมเพย์</option>
