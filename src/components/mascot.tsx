@@ -1,0 +1,15 @@
+export default function Mascot({ className = "w-24 h-24" }: { className?: string }) {
+  // ใบบิลน้อย — ใบบิลยิ้มโทนมินต์
+  return (
+    <svg viewBox="0 0 120 120" className={className} fill="none" aria-label="ใบบิลน้อย">
+      <path d="M30 20 h60 v80 l-8 -6 -8 6 -8 -6 -8 6 -8 -6 -8 6 -8 -6 -4 3 z" fill="#6ee7b7" />
+      <path d="M30 20 h60 v80 l-8 -6 -8 6 -8 -6 -8 6 -8 -6 -8 6 -8 -6 -4 3 z" stroke="#10b981" strokeWidth="3" strokeLinejoin="round" fill="none" />
+      <circle cx="48" cy="48" r="4" fill="#064e3b" />
+      <circle cx="72" cy="48" r="4" fill="#064e3b" />
+      <path d="M50 62 q10 8 20 0" stroke="#064e3b" strokeWidth="3" strokeLinecap="round" fill="none" />
+      <path d="M42 34 h36" stroke="#a7f3d0" strokeWidth="4" strokeLinecap="round" />
+      <circle cx="100" cy="18" r="3" fill="#fbbf24" />
+      <circle cx="14" cy="30" r="2.5" fill="#fbbf24" />
+    </svg>
+  );
+}
