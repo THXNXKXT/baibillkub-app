@@ -1,5 +1,10 @@
 import AppShell from "@/components/app-shell";
+import { DataProvider } from "@/components/data-provider";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  return <AppShell>{children}</AppShell>;
+  return (
+    <DataProvider>
+      <AppShell>{children}</AppShell>
+    </DataProvider>
+  );
 }

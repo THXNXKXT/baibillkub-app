@@ -1,65 +1,52 @@
+"use client";
+
 import Link from "next/link";
-import { db } from "@/db";
-import { document, customer } from "@/db/schema";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { eq, sql, desc, and } from "drizzle-orm";
-import Mascot from "@/components/mascot";
+import { useAppData } from "@/components/data-provider";
 import { FilePlus2, Users, ArrowRight } from "lucide-react";
+import Mascot from "@/components/mascot";
 
-export default async function DashboardPage() {
-  const s = await auth.api.getSession({ headers: await headers() });
-  const userId = s!.user.id;
-  const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+const TYPE_LABEL: Record<string, string> = { quotation: "เสนอราคา", invoice: "แจ้งหนี้", receipt: "เสร็จ", delivery_note: "ส่งของ" };
 
-  const [stats, recent, overdue] = await Promise.all([
-    db
-      .select({
-        pending: sql<number>`coalesce(sum(case when ${document.status} = 'sent' and ${document.type} = 'invoice' then ${document.total}::numeric end), 0)`,
-        overdue: sql<number>`coalesce(sum(case when ${document.status} = 'sent' and ${document.type} = 'invoice' and ${document.dueDate} < now() then ${document.total}::numeric end), 0)`,
-        paidMonth: sql<number>`coalesce(sum(case when ${document.status} = 'paid' and ${document.confirmedAt} >= ${monthStart} then ${document.total}::numeric end), 0)`,
-        pendingCount: sql<number>`count(*) filter (where ${document.status} = 'sent' and ${document.type} = 'invoice')`,
-      })
-      .from(document)
-      .where(eq(document.userId, userId))
-      .then((r) => r[0]),
-    db
-      .select({ doc: document, customerName: customer.name })
-      .from(document)
-      .leftJoin(customer, eq(document.customerId, customer.id))
-      .where(eq(document.userId, userId))
-      .orderBy(desc(document.createdAt))
-      .limit(5),
-    db
-      .select({ doc: document, customerName: customer.name })
-      .from(document)
-      .leftJoin(customer, eq(document.customerId, customer.id))
-      .where(and(eq(document.userId, userId), eq(document.status, "sent"), eq(document.type, "invoice"), sql`${document.dueDate} < now()`))
-      .orderBy(document.dueDate)
-      .limit(3),
-  ]);
+export default function DashboardPage() {
+  const { documents, loading } = useAppData();
 
-  const TYPE_LABEL: Record<string, string> = { quotation: "เสนอราคา", invoice: "แจ้งหนี้", receipt: "เสร็จ", delivery_note: "ส่งของ" };
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="h-6 w-32 rounded bg-[var(--color-rule)]" />
+        <div className="grid grid-cols-3 gap-3">
+          {[0, 1, 2].map((i) => <div key={i} className="card px-4 pt-4 pb-5 space-y-2"><div className="h-2.5 w-16 rounded bg-[var(--color-rule)]" /><div className="h-7 w-24 rounded bg-[var(--color-rule)]" /></div>)}
+        </div>
+      </div>
+    );
+  }
+
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const invoices = documents.filter((d) => d.doc.type === "invoice");
+  const pending = invoices.filter((d) => d.doc.status === "sent");
+  const overdue = pending.filter((d) => d.doc.dueDate && new Date(d.doc.dueDate) < now);
+  const paidMonth = documents.filter((d) => d.doc.status === "paid" && d.doc.confirmedAt && new Date(d.doc.confirmedAt) >= monthStart);
+  const sum = (arr: typeof documents) => arr.reduce((s, d) => s + Number(d.doc.total), 0);
+
   const cards = [
-    { label: "ค้างชำระ", value: Number(stats.pending), sub: `${stats.pendingCount} ฉบับ`, cls: "text-amber-500", dot: "bg-amber-400" },
-    { label: "เกินกำหนด", value: Number(stats.overdue), sub: "ต้องตาม", cls: "text-red-500", dot: "bg-red-400" },
-    { label: "เก็บแล้วเดือนนี้", value: Number(stats.paidMonth), sub: "บาท", cls: "text-[var(--color-accent-ink)]", dot: "bg-[var(--color-accent)]" },
+    { label: "ค้างชำระ", value: sum(pending), sub: `${pending.length} ฉบับ`, cls: "text-amber-500", dot: "bg-amber-400" },
+    { label: "เกินกำหนด", value: sum(overdue), sub: "ต้องตาม", cls: "text-red-500", dot: "bg-red-400" },
+    { label: "เก็บแล้วเดือนนี้", value: sum(paidMonth), sub: "บาท", cls: "text-[var(--color-accent-ink)]", dot: "bg-[var(--color-accent)]" },
   ];
 
   return (
     <div className="space-y-8">
-      {/* greeting + mascot */}
       <div className="flex items-center gap-4">
         <Mascot className="w-14 h-14 shrink-0" />
         <div>
-          <h1 className="text-[22px] font-semibold tracking-[-0.01em]">สวัสดี, {s!.user.name}</h1>
+          <h1 className="text-[22px] font-semibold tracking-[-0.01em]">ภาพรวม</h1>
           <p className="text-[13px] text-[var(--color-muted)]">
-            {stats.pendingCount > 0 ? `มี ${stats.pendingCount} บิลรอเก็บเงินอยู่` : "ไม่มีบิลค้าง เก่งมาก"}
+            {pending.length > 0 ? `มี ${pending.length} บิลรอเก็บเงินอยู่` : "ไม่มีบิลค้าง เก่งมาก"}
           </p>
         </div>
       </div>
 
-      {/* KPI — การ์ดนุ่มๆ มินต์ */}
       <div className="grid grid-cols-3 gap-3">
         {cards.map((c) => (
           <div key={c.label} className="card card-hover px-4 pt-4 pb-5">
@@ -75,11 +62,10 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {/* overdue nudge */}
       {overdue.length > 0 && (
         <div className="card px-4 py-3 border-l-4 border-l-red-400 space-y-1">
           <p className="text-[13px] font-semibold text-red-500">เกินกำหนดชำระ</p>
-          {overdue.map(({ doc, customerName }) => (
+          {overdue.slice(0, 3).map(({ doc, customerName }) => (
             <Link key={doc.id} href={`/documents/${doc.id}`} className="flex justify-between text-[12px] hover:text-[var(--color-accent-ink)]">
               <span>{doc.number} · {customerName}</span>
               <span className="tabular-nums text-[var(--color-muted)]">{Number(doc.total).toLocaleString()} ฿</span>
@@ -88,7 +74,6 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* quick actions */}
       <div className="flex gap-2 text-[13px]">
         <Link href="/documents/new" className="btn-accent px-4 py-2 font-medium flex items-center gap-1.5">
           <FilePlus2 className="w-4 h-4" /> สร้างเอกสาร
@@ -98,7 +83,6 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      {/* recent */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <h2 className="text-[15px] font-semibold">ล่าสุด</h2>
@@ -106,14 +90,14 @@ export default async function DashboardPage() {
             ดูทั้งหมด <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
-        {recent.length === 0 ? (
+        {documents.length === 0 ? (
           <div className="card px-6 py-12 text-center">
             <Mascot className="w-16 h-16 mx-auto opacity-60" />
             <p className="text-[13px] text-[var(--color-muted)] mt-3">ยังไม่มีเอกสาร — สร้างฉบับแรกเลย</p>
           </div>
         ) : (
           <ul className="card divide-y divide-[var(--color-rule)]">
-            {recent.map(({ doc, customerName }) => (
+            {documents.slice(0, 5).map(({ doc, customerName }) => (
               <li key={doc.id}>
                 <Link href={`/documents/${doc.id}`} className="flex items-center gap-3 px-4 py-3 hover:bg-[var(--color-paper-2)] transition-colors">
                   <div className="flex-1 min-w-0">

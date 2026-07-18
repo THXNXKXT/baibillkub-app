@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createCustomer, deleteCustomer } from "@/lib/actions";
+import { useAppData } from "@/components/data-provider";
 import { ChevronDown } from "lucide-react";
 import Mascot from "@/components/mascot";
 import type { listCustomers } from "@/lib/actions";
@@ -31,7 +32,8 @@ function CustomerRow({ c }: { c: Cust }) {
   );
 }
 
-export default function CustomersClient({ customers }: { customers: Cust[] }) {
+export default function CustomersClient() {
+  const { customers, loading, reload } = useAppData();
   const [open, setOpen] = useState(false);
 
   return (
@@ -57,6 +59,7 @@ export default function CustomersClient({ customers }: { customers: Cust[] }) {
               taxId: String(fd.get("taxId") || "") || undefined,
               address: String(fd.get("address") || "") || undefined,
             });
+            reload();
             setOpen(false);
           }}
           className="card px-4 pt-4 pb-4 space-y-3"
@@ -72,7 +75,9 @@ export default function CustomersClient({ customers }: { customers: Cust[] }) {
         </form>
       )}
 
-      {customers.length === 0 ? (
+      {loading ? (
+        <div className="card px-4 py-3"><div className="h-3 w-40 rounded bg-[var(--color-rule)]" /></div>
+      ) : customers.length === 0 ? (
         <div className="card px-6 py-12 text-center">
           <Mascot className="w-16 h-16 mx-auto opacity-60" />
           <p className="text-[13px] text-[var(--color-muted)] mt-3">ยังไม่มีลูกค้า</p>

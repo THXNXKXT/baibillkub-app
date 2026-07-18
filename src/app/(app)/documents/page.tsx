@@ -1,18 +1,23 @@
+"use client";
+
 import Link from "next/link";
-import { listDocuments } from "@/lib/actions";
+import { useSearchParams } from "next/navigation";
+import { useAppData } from "@/components/data-provider";
 import { FilePlus2 } from "lucide-react";
 import Mascot from "@/components/mascot";
+import { Suspense } from "react";
 
 const TYPE_LABEL: Record<string, string> = { quotation: "เสนอราคา", invoice: "แจ้งหนี้", receipt: "เสร็จ", delivery_note: "ส่งของ" };
 const STATUS_DOT: Record<string, string> = {
-  draft: "bg-[var(--color-rule)]", sent: "bg-amber-400", paid: "bg-[var(--color-accent)]",
-  accepted: "bg-[var(--color-accent)]", rejected: "bg-red-400", cancelled: "bg-[var(--color-rule)]",
+  draft: "bg-neutral-300", sent: "bg-amber-400", paid: "bg-[var(--color-accent)]",
+  accepted: "bg-[var(--color-accent)]", rejected: "bg-red-400", cancelled: "bg-neutral-300",
 };
 const STATUS_LABEL: Record<string, string> = { draft: "ร่าง", sent: "รอชำระ", paid: "ชำระแล้ว", accepted: "ตกลง", rejected: "ไม่ตกลง", cancelled: "ยกเลิก" };
 
-export default async function DocumentsPage({ searchParams }: { searchParams: Promise<{ type?: string }> }) {
-  const { type } = await searchParams;
-  const docs = await listDocuments(type);
+function List() {
+  const type = useSearchParams().get("type") ?? undefined;
+  const { documents, loading } = useAppData();
+  const docs = type ? documents.filter((d) => d.doc.type === type) : documents;
 
   return (
     <div className="space-y-6">
@@ -30,7 +35,11 @@ export default async function DocumentsPage({ searchParams }: { searchParams: Pr
         ))}
       </div>
 
-      {docs.length === 0 ? (
+      {loading ? (
+        <div className="card divide-y divide-[var(--color-rule)]">
+          {[0, 1, 2].map((i) => <div key={i} className="px-4 py-3"><div className="h-3 w-40 rounded bg-[var(--color-rule)]" /></div>)}
+        </div>
+      ) : docs.length === 0 ? (
         <div className="card px-6 py-12 text-center">
           <Mascot className="w-16 h-16 mx-auto opacity-60" />
           <p className="text-[13px] text-[var(--color-muted)] mt-3">ยังไม่มีเอกสาร — สร้างฉบับแรกเลย</p>
@@ -53,4 +62,8 @@ export default async function DocumentsPage({ searchParams }: { searchParams: Pr
       )}
     </div>
   );
+}
+
+export default function DocumentsPage() {
+  return <Suspense><List /></Suspense>;
 }
