@@ -25,7 +25,7 @@ export default async function DocDetailPage({ params }: { params: Promise<{ id: 
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2 no-print">
         <div>
           <h1 className="text-[17px] font-semibold">{TYPE_LABEL[doc.type]} {doc.number}</h1>
           <p className="text-[11px] text-[var(--color-muted)]">{STATUS_LABEL[doc.status]} · {cust?.name}</p>
@@ -44,10 +44,10 @@ export default async function DocDetailPage({ params }: { params: Promise<{ id: 
       </div>
       {doc.slipImage && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={doc.slipImage} alt="สลิป" className="w-40 rounded-lg border border-[var(--color-rule)]" />
+        <img src={doc.slipImage} alt="สลิป" className="w-40 rounded-lg border border-[var(--color-rule)] no-print" />
       )}
 
-      <div className="flex flex-wrap gap-2 text-[13px]">
+      <div className="flex flex-wrap gap-2 text-[13px] no-print">
         {doc.type === "invoice" && doc.status === "sent" && (
           <form action={confirmPayment.bind(null, doc.id)}>
             <button className="btn-accent px-4 py-2 font-medium">ยืนยันชำระ (ออกใบเสร็จ)</button>
