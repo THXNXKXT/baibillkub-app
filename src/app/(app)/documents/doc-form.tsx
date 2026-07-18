@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createDocument, createCustomer, type DocInput } from "@/lib/actions";
 import { Plus, Trash2 } from "lucide-react";
+import BillLayout from "@/components/bill-layout";
 
 const TYPES = [
   { v: "quotation", label: "ใบเสนอราคา" },
@@ -167,38 +168,23 @@ export default function DocForm({ customers }: { customers: { id: string; name: 
     </form>
   );
 
-  // preview — โครงเดียวกับ public doc
+  // preview — BillLayout เดียวกับของจริง (mock doc)
   const validItems = items.filter((i) => i.description.trim());
+  const mockDoc = {
+    id: "", userId: "", customerId: "", type: type as never, number: "0000", status: "draft" as const,
+    issueDate: new Date(), dueDate: null, notes: notes || null,
+    subtotal: subtotal.toFixed(2), tax: tax.toFixed(2), discount: "0.00", total: (subtotal + tax).toFixed(2),
+    paymentMethod: null, publicToken: "", convertedFromId: null, slipImage: null, confirmedAt: null,
+    createdAt: new Date(), updatedAt: new Date(),
+  };
   const preview = (
     <div className="card rounded-2xl overflow-hidden sticky top-6">
-      <div className="pt-1.5 bg-[var(--color-accent)]" />
-      <div className="px-5 py-4">
-        <div className="flex items-baseline justify-between">
-          <p className="text-[15px] font-bold">{TYPE_LABEL[type]}</p>
-          <p className="text-[10px] text-[var(--color-muted)]">ตัวอย่าง</p>
-        </div>
-        <p className="text-[11px] text-[var(--color-muted)] mt-1">{custName || "—"} · {new Date().toLocaleDateString("th-TH")}</p>
-      </div>
-      <div className="px-5 pb-5 space-y-3">
-        <table className="w-full text-[12px]">
-          <tbody>
-            {validItems.length ? validItems.map((it, i) => (
-              <tr key={i} className="border-b border-[var(--color-rule)]">
-                <td className="py-2">{it.description}</td>
-                <td className="py-2 text-right text-[var(--color-muted)] w-12 tabular-nums">×{it.qty}</td>
-                <td className="py-2 text-right w-20 tabular-nums">{fmt(it.unitPrice)}</td>
-              </tr>
-            )) : (
-              <tr><td className="py-4 text-center text-[var(--color-muted)] text-[11px]">พิมพ์รายการทางซ้าย</td></tr>
-            )}
-          </tbody>
-        </table>
-        <div className="flex justify-between items-center pt-1">
-          <span className="text-[11px] text-[var(--color-muted)]">ยอดรวม{taxRate > 0 && ` (รวมภาษี ${fmt(tax)})`}</span>
-          <span className="text-[17px] font-bold text-[var(--color-accent-ink)] tabular-nums">{fmt(subtotal + tax)} ฿</span>
-        </div>
-        {notes && <p className="text-[10px] text-[var(--color-muted)] border-t border-[var(--color-rule)] pt-2">{notes}</p>}
-      </div>
+      <BillLayout
+        doc={mockDoc}
+        cust={custName ? { id: "", userId: "", name: custName, email: null, phone: null, address: null, taxId: null, createdAt: new Date() } : null}
+        owner={null}
+        items={validItems.map((it, i) => ({ id: String(i), documentId: "", description: it.description, qty: String(it.qty), unitPrice: it.unitPrice.toFixed(2) }))}
+      />
     </div>
   );
 
