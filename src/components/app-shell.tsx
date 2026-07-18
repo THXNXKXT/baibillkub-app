@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import { LayoutDashboard, FileText, Users, Settings } from "lucide-react";
 
 const NAV = [
@@ -57,7 +58,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </nav>
 
-      <main className="flex-1 min-w-0 px-5 sm:px-8 py-6 pb-24 sm:pb-6">{children}</main>
+      <main className="flex-1 min-w-0 px-5 sm:px-8 py-6 pb-24 sm:pb-6">
+        <motion.div
+          key={path}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {children}
+        </motion.div>
+      </main>
     </div>
   );
 }
