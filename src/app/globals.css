@@ -97,3 +97,10 @@ html, body { overflow-x: clip; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+@media print {
+  aside, nav, form, button, .no-print { display: none !important; }
+  main { padding: 0 !important; }
+  .card { box-shadow: none !important; border-radius: 0 !important; }
+  body { background: #fff; }
+}
