@@ -169,20 +169,25 @@ export default function Landing() {
         </motion.div>
 
         {/* FAQ */}
-        <motion.div {...fadeUp} transition={spring} className="max-w-2xl mx-auto py-14 border-t border-[var(--color-rule)] space-y-4">
+        <motion.div {...fadeUp} transition={spring} className="max-w-2xl mx-auto py-14 border-t border-[var(--color-rule)] space-y-3">
           <h2 className="text-[17px] font-semibold text-center mb-6">คำถามที่พบบ่อย</h2>
           {FAQ.map((f) => (
-            <div key={f.q} className="card px-5 py-4">
-              <p className="text-[14px] font-semibold">{f.q}</p>
-              <p className="text-[13px] text-[var(--color-muted)] mt-1">{f.a}</p>
-            </div>
+            <details key={f.q} className="card px-5 py-4 group">
+              <summary className="flex items-center justify-between cursor-pointer list-none text-[14px] font-semibold [&::-webkit-details-marker]:hidden">
+                {f.q}
+                <span className="text-[var(--color-muted)] transition-transform group-open:rotate-45 text-[18px] leading-none">+</span>
+              </summary>
+              <p className="text-[13px] text-[var(--color-muted)] mt-2">{f.a}</p>
+            </details>
           ))}
         </motion.div>
 
         {/* CTA ปิด */}
         <motion.div {...fadeUp} transition={spring} className="py-20 text-center border-t border-[var(--color-rule)]">
-          <p className="text-[22px] font-semibold tracking-[-0.01em]">บิลฉบับแรกของคุณ รออยู่</p>
-          <Link href="/login" className="btn-accent inline-block mt-6 px-8 py-3 text-[15px] font-medium">สร้างเลย</Link>
+          <Mascot className="w-16 h-16 mx-auto" />
+          <p className="text-[22px] font-semibold tracking-[-0.01em] mt-4">บิลฉบับแรกของคุณ รออยู่</p>
+          <p className="text-[13px] text-[var(--color-muted)] mt-2">ฟรี · ไม่ต้องใช้บัตร · ใช้ได้เลย</p>
+          <Link href="/login" className="btn-accent inline-block mt-6 px-10 py-3.5 text-[15px] font-medium">เริ่มใช้ฟรี</Link>
         </motion.div>
       </div>
 
