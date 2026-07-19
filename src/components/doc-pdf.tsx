@@ -92,7 +92,18 @@ function DocPDF({ doc, cust, owner, items }: Props) {
         <View style={{ marginLeft: "auto", width: 180, marginTop: 8 }}>
           <View style={s.row}><Text>ราคารวม</Text><Text style={{ fontFamily: "Sukhumvit-Bold" }}>{fmt(doc.subtotal)}.-</Text></View>
           {Number(doc.tax) > 0 && <View style={s.row}><Text>ภาษีมูลค่าเพิ่ม (7%)</Text><Text style={{ fontFamily: "Sukhumvit-Bold" }}>{fmt(doc.tax)}.-</Text></View>}
-          {Number(doc.discount) > 0 && <View style={s.row}><Text>ส่วนลด</Text><Text style={{ fontFamily: "Sukhumvit-Bold" }}>{fmt(doc.discount)}.-</Text></View>}
+          {Number(doc.discount) > 0 && (
+            <View style={s.row}>
+              <Text>ส่วนลด{doc.discountType === "percent" ? ` (${Number(doc.discount)}%)` : ""}</Text>
+              <Text style={{ fontFamily: "Sukhumvit-Bold" }}>{fmt(doc.discountType === "percent" ? (Number(doc.subtotal) * Number(doc.discount)) / 100 : Number(doc.discount))}.-</Text>
+            </View>
+          )}
+          {Number(doc.whtRate) > 0 && (
+            <View style={s.row}>
+              <Text>หัก ณ ที่จ่าย ({Number(doc.whtRate)}%)</Text>
+              <Text style={{ fontFamily: "Sukhumvit-Bold" }}>{fmt(((Number(doc.subtotal) - (doc.discountType === "percent" ? (Number(doc.subtotal) * Number(doc.discount)) / 100 : Number(doc.discount))) * Number(doc.whtRate)) / 100)}.-</Text>
+            </View>
+          )}
         </View>
         <View style={s.totalBar}>
           <Text>{thaiBaht(doc.total)}</Text>
