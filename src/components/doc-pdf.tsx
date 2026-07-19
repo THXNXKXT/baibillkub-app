@@ -105,7 +105,8 @@ function DocPDF({ doc, cust, owner, items }: Props) {
             <Text style={s.muted}>ชื่อบัญชี : {owner?.shopName || owner?.name}</Text>
             {owner?.promptpayId && <Text style={s.muted}>พร้อมเพย์ : {owner.promptpayId}</Text>}
             {doc.paymentMethod === "promptpay" && owner?.promptpayId && doc.publicToken && (
-              <Image src={`/api/qr?token=${doc.publicToken}`} style={{ width: 72, height: 72, marginTop: 4 }} alt="" />
+              // eslint-disable-next-line jsx-a11y/alt-text
+              <Image src={`/api/qr?token=${doc.publicToken}`} style={{ width: 72, height: 72, marginTop: 4 }} />
             )}
             {doc.notes && <Text style={[s.muted, { marginTop: 4 }]}>{doc.notes}</Text>}
           </View>
