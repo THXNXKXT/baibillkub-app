@@ -43,9 +43,14 @@ export default async function DocDetailPage({ params }: { params: Promise<{ id: 
       <div className="card rounded-2xl overflow-hidden">
         <BillLayout doc={doc} cust={cust} owner={owner as never} items={items} />
       </div>
-      {doc.slipImage && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={doc.slipImage} alt="สลิป" className="w-40 rounded-lg border border-[var(--color-rule)] no-print" />
+      {doc.paidReportedAt && (
+        <div className="card px-4 py-3 border-l-4 border-l-amber-400">
+          <p className="text-[13px] font-semibold text-amber-600">ลูกค้าแจ้งชำระแล้ว</p>
+          {doc.slipImage && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={doc.slipImage} alt="สลิป" className="w-40 rounded-lg border border-[var(--color-rule)] no-print mt-2" />
+          )}
+        </div>
       )}
 
       <div className="flex flex-wrap gap-2 text-[13px] no-print">

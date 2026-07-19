@@ -55,6 +55,8 @@ export default function PublicDoc({ doc, cust, owner, items }: { doc: Doc; cust:
               <button onClick={() => respond(true)} className="btn-accent flex-1 py-2.5 font-medium">ตกลง</button>
               <button onClick={() => respond(false)} className="btn-ghost flex-1 py-2.5">ไม่ตกลง</button>
             </div>
+          ) : doc.type === "invoice" && doc.status === "sent" && doc.paidReportedAt ? (
+            <p className="text-center text-[13px] font-semibold text-[var(--color-accent-ink)] py-2">แจ้งชำระแล้ว รอการยืนยัน</p>
           ) : doc.type === "invoice" && doc.status === "sent" && doc.paymentMethod === "promptpay" && owner?.promptpayId ? (
             <div className="text-center space-y-3 pt-1">
               {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -15,9 +15,8 @@ export async function respondQuotation(token: string, accept: boolean) {
 
 export async function reportPayment(token: string, slipImage?: string) {
   const [d] = await db.select().from(document).where(eq(document.publicToken, token));
-  if (!d || d.type !== "invoice" || d.status !== "sent") throw new Error("แจ้งไม่ได้");
-  await db.update(document).set({ slipImage: slipImage || null, status: "sent" }).where(eq(document.id, d.id));
-  // ponytail: slip เก็บแล้ว รอเจ้าของ confirm — status คง sent (ดู slip ใน detail ได้)
+  if (!d || d.type !== "invoice" || d.status !== "sent" || d.paidReportedAt) throw new Error("แจ้งไม่ได้");
+  await db.update(document).set({ slipImage: slipImage || null, paidReportedAt: new Date() }).where(eq(document.id, d.id));
   revalidatePath(`/b/${token}`);
 }
 

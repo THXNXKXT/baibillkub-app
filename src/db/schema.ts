@@ -91,6 +91,7 @@ export const document = pgTable("document", {
   publicToken: text("public_token").notNull().unique(),
   convertedFromId: text("converted_from_id"),
   slipImage: text("slip_image"),
+  paidReportedAt: timestamp("paid_reported_at"),
   confirmedAt: timestamp("confirmed_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
