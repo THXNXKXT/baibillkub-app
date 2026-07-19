@@ -65,7 +65,7 @@ function DocPDF({ doc, cust, owner, items }: Props) {
           <View style={{ alignItems: "flex-end" }}>
             <Text style={[s.muted, { fontFamily: "Sukhumvit-Bold" }]}>{owner?.shopName || owner?.name}</Text>
             {owner?.address && <Text style={s.muted}>{owner.address}</Text>}
-            {owner?.phone && <Text style={s.muted}>{owner.phone}</Text>}
+            {owner?.phone && <Text style={s.muted}>โทร. {owner.phone}</Text>}
             {owner?.taxId && <Text style={s.muted}>ภาษี {owner.taxId}</Text>}
             {owner?.email && <Text style={s.muted}>{owner.email}</Text>}
           </View>
@@ -106,7 +106,7 @@ function DocPDF({ doc, cust, owner, items }: Props) {
             <Text style={s.muted}>ชื่อบัญชี : {owner?.shopName || owner?.name}</Text>
             {owner?.promptpayId && <Text style={s.muted}>พร้อมเพย์ : {owner.promptpayId}</Text>}
             {doc.paymentMethod === "promptpay" && owner?.promptpayId && doc.publicToken && (
-              <Image src={`/api/qr?token=${doc.publicToken}`} style={{ width: 72, height: 72, marginTop: 4 }} />
+              <Image src={`/api/qr?token=${doc.publicToken}`} style={{ width: 72, height: 72, marginTop: 4 }} alt="" />
             )}
             {doc.notes && <Text style={[s.muted, { marginTop: 4 }]}>{doc.notes}</Text>}
           </View>
