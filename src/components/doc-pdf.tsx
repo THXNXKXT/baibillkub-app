@@ -58,16 +58,15 @@ function DocPDF({ doc, cust, owner, items }: Props) {
           <View>
             <Text style={s.section}>ข้อมูลลูกค้า</Text>
             <Text style={s.muted}>ชื่อลูกค้า : {cust?.name}</Text>
+            {cust?.address && <Text style={s.muted}>ที่อยู่ : {cust.address}</Text>}
             {cust?.taxId && <Text style={s.muted}>เลขประจำตัวผู้เสียภาษี : {cust.taxId}</Text>}
             {cust?.phone && <Text style={s.muted}>เบอร์โทรศัพท์ : {cust.phone}</Text>}
-            {cust?.address && <Text style={s.muted}>ที่อยู่ : {cust.address}</Text>}
           </View>
           <View style={{ alignItems: "flex-end" }}>
             <Text style={[s.muted, { fontFamily: "Sukhumvit-Bold" }]}>{owner?.shopName || owner?.name}</Text>
             {owner?.address && <Text style={s.muted}>{owner.address}</Text>}
             {owner?.phone && <Text style={s.muted}>โทร. {owner.phone}</Text>}
-            {owner?.taxId && <Text style={s.muted}>ภาษี {owner.taxId}</Text>}
-            {owner?.email && <Text style={s.muted}>{owner.email}</Text>}
+            {owner?.taxId && <Text style={s.muted}>เลขภาษี {owner.taxId}</Text>}
           </View>
         </View>
 

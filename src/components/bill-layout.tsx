@@ -31,14 +31,14 @@ export default function BillLayout({ doc, cust, owner, items }: { doc: Doc; cust
         <div className="text-[11px] space-y-0.5">
           <p className="font-semibold underline underline-offset-2 mb-1.5">ข้อมูลลูกค้า</p>
           <p>ชื่อลูกค้า : {cust?.name}</p>
+          {cust?.address && <p>ที่อยู่ : {cust.address}</p>}
           {cust?.taxId && <p className="tabular-nums">เลขประจำตัวผู้เสียภาษี : {cust.taxId}</p>}
           {cust?.phone && <p className="tabular-nums">เบอร์โทรศัพท์ : {cust.phone}</p>}
-          {cust?.address && <p>ที่อยู่ : {cust.address}</p>}
         </div>
         <div className="text-[11px] space-y-0.5 text-right">
           <p className="font-semibold">{owner?.shopName || owner?.name}</p>
           {owner?.address && <p>{owner.address}</p>}
-          {owner?.taxId && <p className="tabular-nums">ภาษี {owner.taxId}</p>}
+          {owner?.taxId && <p className="tabular-nums">เลขภาษี {owner.taxId}</p>}
           {owner?.phone && <p className="tabular-nums">โทร.{owner.phone}</p>}
         </div>
       </div>
@@ -96,43 +96,46 @@ export default function BillLayout({ doc, cust, owner, items }: { doc: Doc; cust
       </div>
 
       {/* footer */}
-      <div className="grid grid-cols-2 gap-6 px-6 mt-5 pb-6 text-[11px]">
-        {(doc.type === "invoice" || doc.type === "quotation") && doc.paymentMethod && (
-          <div className="space-y-0.5">
-            <p className="font-semibold underline underline-offset-2 mb-1.5">ช่องทางการชำระเงิน</p>
-            {doc.paymentMethod === "promptpay" && owner?.promptpayId && (
-              <>
-                <p>ชื่อบัญชี : {owner.promptpayName || owner.shopName || owner.name}</p>
-                <p className="tabular-nums">พร้อมเพย์ : {owner.promptpayId}</p>
-                {doc.publicToken && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={`/api/qr?token=${doc.publicToken}`} alt="QR พร้อมเพย์" className="w-28 h-28 rounded border border-[var(--color-rule)] mt-1" />
-                )}
-              </>
+      <div className="flex justify-between gap-6 px-6 mt-5 pb-6 text-[11px]">
+        <div className="space-y-2 flex-1">
+          {(doc.type === "invoice" || doc.type === "quotation") && doc.paymentMethod && (
+            <div className="space-y-0.5">
+              <p className="font-semibold underline underline-offset-2 mb-1.5">ช่องทางการชำระเงิน</p>
+              {doc.paymentMethod === "promptpay" && owner?.promptpayId && (
+                <>
+                  <p>ชื่อบัญชี : {owner.promptpayName || owner.shopName || owner.name}</p>
+                  <p className="tabular-nums">พร้อมเพย์ : {owner.promptpayId}</p>
+                  {doc.publicToken && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={`/api/qr?token=${doc.publicToken}`} alt="QR พร้อมเพย์" className="w-28 h-28 rounded border border-[var(--color-rule)] mt-1" />
+                  )}
+                </>
+              )}
+              {doc.paymentMethod === "bank" && owner?.bankAccount && (
+                <>
+                  <p>ชื่อบัญชี : {owner.bankAccountName || owner.shopName || owner.name}</p>
+                  <p className="tabular-nums">เลขบัญชี : {owner.bankAccount}{owner.bankName && ` (${owner.bankName})`}</p>
+                </>
+              )}
+              {doc.paymentMethod === "cash" && <p>เงินสด</p>}
+            </div>
+          )}
+          <div>
+            {doc.terms && <p className="text-[var(--color-muted)]">{doc.terms}</p>}
+            {doc.notes && <p className="text-[var(--color-muted)] mt-1">หมายเหตุ: {doc.notes}</p>}
+          </div>
+        </div>
+        {doc.showSignature && (
+          <div className="text-center space-y-0.5 self-end shrink-0">
+            {doc.signatureName ? (
+              <p className="mt-8 border-b border-[var(--color-rule)] w-40 text-center">{doc.signatureName}</p>
+            ) : (
+              <p className="mt-8 border-b border-[var(--color-rule)] w-40">&nbsp;</p>
             )}
-            {doc.paymentMethod === "bank" && owner?.bankAccount && (
-              <>
-                <p>ชื่อบัญชี : {owner.bankAccountName || owner.shopName || owner.name}</p>
-                <p className="tabular-nums">เลขบัญชี : {owner.bankAccount}{owner.bankName && ` (${owner.bankName})`}</p>
-              </>
-            )}
-            {doc.paymentMethod === "cash" && <p>เงินสด</p>}
+            <p>ผู้มีอำนาจลงนาม</p>
+            <p>{new Date(doc.issueDate).toLocaleDateString("th-TH", { day: "numeric", month: "long", year: "numeric" })}</p>
           </div>
         )}
-        <div>
-          {doc.terms && <p className="text-[var(--color-muted)]">{doc.terms}</p>}
-          {doc.notes && <p className="text-[var(--color-muted)] mt-1">หมายเหตุ: {doc.notes}</p>}
-        </div>
-        <div className="text-center space-y-0.5 self-end">
-          {doc.showSignature && (
-            <>
-              <p className="mt-8 border-b border-[var(--color-rule)] w-40 ml-auto" />
-              <p>({owner?.name})</p>
-              <p>ผู้มีอำนาจลงนาม</p>
-              <p>{new Date(doc.issueDate).toLocaleDateString("th-TH", { day: "numeric", month: "long", year: "numeric" })}</p>
-            </>
-          )}
-        </div>
       </div>
     </div>
   );

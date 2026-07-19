@@ -57,6 +57,8 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
   const [discOn, setDiscOn] = useState(false);
   const [whtOn, setWhtOn] = useState(false);
   const [showSignature, setShowSignature] = useState(true);
+  const [sigMode, setSigMode] = useState<"blank" | "name">("blank");
+  const [signatureName, setSignatureName] = useState("");
   const [whtRate, setWhtRate] = useState(3);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -99,6 +101,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
         discountType,
         whtRate: whtOn ? whtRate : 0,
         showSignature,
+        signatureName: sigMode === "name" ? signatureName : undefined,
         items: validItems,
       };
       await createDocument(data);
@@ -169,9 +172,18 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
             </label>
           </div>
         )}
-        <label className="flex items-center gap-1.5 text-[13px]">
-          <input type="checkbox" checked={showSignature} onChange={(e) => setShowSignature(e.target.checked)} /> แสดงช่องเซ็นชื่อ (ผู้มีอำนาจลงนาม)
-        </label>
+        <div className="space-y-2">
+          <label className="flex items-center gap-1.5 text-[13px]">
+            <input type="checkbox" checked={showSignature} onChange={(e) => setShowSignature(e.target.checked)} /> แสดงช่องเซ็นชื่อ (ผู้มีอำนาจลงนาม)
+          </label>
+          {showSignature && (
+            <div className="flex items-center gap-3 text-[13px]">
+              <label className="flex items-center gap-1"><input type="radio" checked={sigMode === "blank"} onChange={() => setSigMode("blank")} /> เว้นว่างให้เซ็นเอง</label>
+              <label className="flex items-center gap-1"><input type="radio" checked={sigMode === "name"} onChange={() => setSigMode("name")} /> พิมพ์ชื่อลงไป</label>
+              {sigMode === "name" && <input value={signatureName} onChange={(e) => setSignatureName(e.target.value)} placeholder="ชื่อผู้ลงนาม" className={`${input} w-40`} />}
+            </div>
+          )}
+        </div>
         <div className="grid grid-cols-2 gap-3">
           <textarea value={terms} onChange={(e) => setTerms(e.target.value)} placeholder="รายละเอียดเงื่อนไข" rows={2} className={input} />
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="หมายเหตุ" rows={2} className={input} />
@@ -258,7 +270,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
   const mockDoc = {
     id: "", userId: "", customerId: "", type: type as never, number: "0000", status: "draft" as const,
     issueDate: new Date(), dueDate: null, terms: terms || null, notes: notes || null,
-    subtotal: subtotal.toFixed(2), tax: tax.toFixed(2), discount: (discOn ? discount : 0).toFixed(2), discountType, whtRate: (whtOn ? whtRate : 0).toFixed(2), total: total.toFixed(2), showSignature,
+    subtotal: subtotal.toFixed(2), tax: tax.toFixed(2), discount: (discOn ? discount : 0).toFixed(2), discountType, whtRate: (whtOn ? whtRate : 0).toFixed(2), total: total.toFixed(2), showSignature, signatureName: sigMode === "name" ? signatureName : null,
     paymentMethod: (paymentMethod || null) as never, publicToken: "", convertedFromId: null, slipImage: null, paidReportedAt: null, confirmedAt: null,
     createdAt: new Date(), updatedAt: new Date(),
   };
