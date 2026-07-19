@@ -14,6 +14,23 @@ const FEATURES = [
   { icon: FileCheck2, t: "ใบเสร็จออกเอง", d: "ยืนยันยอดแล้วระบบออกใบเสร็จให้ทันที ไม่ต้องพิมพ์ซ้ำ" },
 ];
 
+const STATS = [
+  { n: "4", l: "ประเภทเอกสาร" },
+  { n: "2 นาที", l: "ต่อบิลหนึ่งฉบับ" },
+  { n: "0", l: "ลูกค้าต้องสมัคร" },
+];
+
+const COMPARE = [
+  ["ส่ง PDF ในแชท", "ไฟล์หายในแชท อ่านยากในมือถือ ไม่รู้ว่าจ่ายหรือยัง"],
+  ["ส่งลิงก์ baibillkub", "เปิดเห็นบิลสวย สแกนจ่ายได้เลย ระบบจำสถานะให้"],
+];
+
+const FAQ = [
+  { q: "ลูกค้าต้องสมัครสมาชิกไหม?", a: "ไม่ต้อง เปิดลิงก์เห็นบิล ตอบรับหรือจ่ายเงินได้ทันที" },
+  { q: "ใช้ฟรีจริงไหม?", a: "ฟรี สร้างเอกสารได้ไม่จำกัด" },
+  { q: "รับเงินช่องทางไหนได้บ้าง?", a: "พร้อมเพย์ (QR ในบิลอัตโนมัติ) โอนธนาคาร และเงินสด" },
+];
+
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
@@ -91,6 +108,16 @@ export default function Landing() {
           </motion.div>
         </div>
 
+        {/* stats strip */}
+        <motion.div {...fadeUp} transition={spring} className="grid grid-cols-3 gap-3 py-10 border-t border-[var(--color-rule)]">
+          {STATS.map((s) => (
+            <div key={s.l} className="text-center">
+              <p className="text-[28px] font-bold text-[var(--color-accent-ink)] tabular-nums">{s.n}</p>
+              <p className="text-[12px] text-[var(--color-muted)] mt-1">{s.l}</p>
+            </div>
+          ))}
+        </motion.div>
+
         {/* flow: เสนอราคา → แจ้งหนี้ → เสร็จ */}
         <motion.div {...fadeUp} transition={spring} className="py-12 border-t border-[var(--color-rule)]">
           <div className="flex flex-wrap items-center justify-center gap-3 text-[13px]">
@@ -128,6 +155,26 @@ export default function Landing() {
             </motion.div>
           ))}
         </div>
+
+        {/* comparison */}
+        <motion.div {...fadeUp} transition={spring} className="grid sm:grid-cols-2 gap-4 py-14 border-t border-[var(--color-rule)]">
+          {COMPARE.map(([t, d], i) => (
+            <div key={t} className={`card px-5 pt-5 pb-6 ${i === 0 ? "opacity-70" : ""}`}>
+              <p className={`text-[15px] font-semibold ${i === 1 ? "text-[var(--color-accent-ink)]" : ""}`}>{t}</p>
+              <p className="text-[13px] text-[var(--color-muted)] mt-1.5 leading-relaxed">{d}</p>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* FAQ */}
+        <motion.div {...fadeUp} transition={spring} className="max-w-2xl mx-auto py-14 border-t border-[var(--color-rule)] space-y-6">
+          {FAQ.map((f) => (
+            <div key={f.q}>
+              <p className="text-[15px] font-semibold">{f.q}</p>
+              <p className="text-[13px] text-[var(--color-muted)] mt-1">{f.a}</p>
+            </div>
+          ))}
+        </motion.div>
 
         {/* CTA ปิด */}
         <motion.div {...fadeUp} transition={spring} className="py-20 text-center border-t border-[var(--color-rule)]">
