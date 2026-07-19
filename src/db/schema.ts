@@ -92,6 +92,7 @@ export const document = pgTable("document", {
   convertedFromId: text("converted_from_id"),
   slipImage: text("slip_image"),
   paidReportedAt: timestamp("paid_reported_at"),
+  showSignature: boolean("show_signature").notNull().default(true),
   confirmedAt: timestamp("confirmed_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

@@ -44,6 +44,7 @@ export type DocInput = {
   dueDate?: Date;
   notes?: string;
   terms?: string;
+  showSignature?: boolean;
   taxRate: number; // 0 หรือ 7
   discount?: number;
   discountType?: "amount" | "percent";
@@ -85,6 +86,7 @@ export async function createDocument(data: DocInput) {
       dueDate: data.dueDate,
       notes: data.notes,
       terms: data.terms,
+      showSignature: data.showSignature ?? true,
       paymentMethod: data.paymentMethod,
       subtotal: subtotal.toFixed(2),
       tax: tax.toFixed(2),
@@ -161,7 +163,7 @@ async function convert(srcId: string, userId: string, type: "invoice" | "receipt
       id: nanoid(), userId, customerId: src.customerId, type,
       number: await nextNumber(userId, type),
       status: type === "receipt" ? "paid" : "draft",
-      issueDate: new Date(), notes: src.notes, terms: src.terms,
+      issueDate: new Date(), notes: src.notes, terms: src.terms, showSignature: src.showSignature,
       subtotal: src.subtotal, tax: src.tax, discount: src.discount, discountType: src.discountType, whtRate: src.whtRate, total: src.total,
       paymentMethod: src.paymentMethod, publicToken: nanoid(21), convertedFromId: src.id,
     })

@@ -104,7 +104,10 @@ export default function BillLayout({ doc, cust, owner, items }: { doc: Doc; cust
               <>
                 <p>ชื่อบัญชี : {owner.promptpayName || owner.shopName || owner.name}</p>
                 <p className="tabular-nums">พร้อมเพย์ : {owner.promptpayId}</p>
-                <p>QR Code : อยู่ในหน้าชำระเงินออนไลน์</p>
+                {doc.publicToken && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={`/api/qr?token=${doc.publicToken}`} alt="QR พร้อมเพย์" className="w-28 h-28 rounded border border-[var(--color-rule)] mt-1" />
+                )}
               </>
             )}
             {doc.paymentMethod === "bank" && owner?.bankAccount && (
@@ -120,10 +123,15 @@ export default function BillLayout({ doc, cust, owner, items }: { doc: Doc; cust
           {doc.terms && <p className="text-[var(--color-muted)]">{doc.terms}</p>}
           {doc.notes && <p className="text-[var(--color-muted)] mt-1">หมายเหตุ: {doc.notes}</p>}
         </div>
-        <div className="text-center space-y-0.5 self-end">
-          <p className="mt-8">({owner?.name})</p>
-          <p>ผู้มีอำนาจลงนาม</p>
-          <p>{new Date(doc.issueDate).toLocaleDateString("th-TH", { day: "numeric", month: "long", year: "numeric" })}</p>
+        <div className="text-right space-y-0.5 self-end">
+          {doc.showSignature && (
+            <>
+              <p className="mt-8 border-b border-[var(--color-rule)] w-40 ml-auto" />
+              <p>({owner?.name})</p>
+              <p>ผู้มีอำนาจลงนาม</p>
+              <p>{new Date(doc.issueDate).toLocaleDateString("th-TH", { day: "numeric", month: "long", year: "numeric" })}</p>
+            </>
+          )}
         </div>
       </div>
     </div>
