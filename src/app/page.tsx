@@ -34,7 +34,7 @@ const FAQ = [
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "0px 0px 400px 0px" },
+  viewport: { once: false, amount: 0.3 },
 };
 
 export default function Landing() {
