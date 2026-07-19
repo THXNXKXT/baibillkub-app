@@ -14,6 +14,12 @@ const STATUS_DOT: Record<string, string> = {
 };
 const STATUS_LABEL: Record<string, string> = { draft: "ร่าง", sent: "รอชำระ", paid: "ชำระแล้ว", accepted: "ตกลง", rejected: "ไม่ตกลง", cancelled: "ยกเลิก" };
 
+// ponytail: ลูกค้าแจ้งชำระแล้ว — ขึ้น badge เตือนในลิสต์ ไม่ต้องกดเข้าไปดู
+function statusOf(doc: { status: string; paidReportedAt: Date | null }) {
+  if (doc.paidReportedAt && doc.status === "sent") return { dot: "bg-amber-500", label: "แจ้งชำระแล้ว" };
+  return { dot: STATUS_DOT[doc.status], label: STATUS_LABEL[doc.status] };
+}
+
 function List() {
   const type = useSearchParams().get("type") ?? undefined;
   const { documents, loading } = useAppData();
@@ -46,18 +52,21 @@ function List() {
         </div>
       ) : (
         <ul className="card divide-y divide-[var(--color-rule)]">
-          {docs.map(({ doc, customerName }) => (
-            <li key={doc.id}>
-              <Link href={`/documents/${doc.id}`} className="flex items-center gap-3 px-4 py-3 hover:bg-[var(--color-paper-2)] transition-colors">
-                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_DOT[doc.status]}`} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-semibold truncate">{doc.number} · {customerName}</p>
-                  <p className="text-[11px] text-[var(--color-muted)]">{TYPE_LABEL[doc.type]} · {STATUS_LABEL[doc.status]}</p>
-                </div>
-                <p className="text-[13px] font-semibold tabular-nums">{Number(doc.total).toLocaleString()} ฿</p>
-              </Link>
-            </li>
-          ))}
+          {docs.map(({ doc, customerName }) => {
+            const st = statusOf(doc);
+            return (
+              <li key={doc.id}>
+                <Link href={`/documents/${doc.id}`} className="flex items-center gap-3 px-4 py-3 hover:bg-[var(--color-paper-2)] transition-colors">
+                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${st.dot}`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-semibold truncate">{doc.number} · {customerName}</p>
+                    <p className="text-[11px] text-[var(--color-muted)]">{TYPE_LABEL[doc.type]} · {st.label}</p>
+                  </div>
+                  <p className="text-[13px] font-semibold tabular-nums">{Number(doc.total).toLocaleString()} ฿</p>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
