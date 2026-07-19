@@ -254,7 +254,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
     id: "", userId: "", customerId: "", type: type as never, number: "0000", status: "draft" as const,
     issueDate: new Date(), dueDate: null, terms: terms || null, notes: notes || null,
     subtotal: subtotal.toFixed(2), tax: tax.toFixed(2), discount: (discOn ? discount : 0).toFixed(2), discountType, whtRate: (whtOn ? whtRate : 0).toFixed(2), total: total.toFixed(2),
-    paymentMethod: (paymentMethod || null) as never, publicToken: "", convertedFromId: null, slipImage: null, confirmedAt: null,
+    paymentMethod: (paymentMethod || null) as never, publicToken: "", convertedFromId: null, slipImage: null, paidReportedAt: null, confirmedAt: null,
     createdAt: new Date(), updatedAt: new Date(),
   };
   const custPreview = custMode === "new"
