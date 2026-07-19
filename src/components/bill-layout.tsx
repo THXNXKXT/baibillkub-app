@@ -123,7 +123,7 @@ export default function BillLayout({ doc, cust, owner, items }: { doc: Doc; cust
           {doc.terms && <p className="text-[var(--color-muted)]">{doc.terms}</p>}
           {doc.notes && <p className="text-[var(--color-muted)] mt-1">หมายเหตุ: {doc.notes}</p>}
         </div>
-        <div className="text-right space-y-0.5 self-end">
+        <div className="text-center space-y-0.5 self-end">
           {doc.showSignature && (
             <>
               <p className="mt-8 border-b border-[var(--color-rule)] w-40 ml-auto" />

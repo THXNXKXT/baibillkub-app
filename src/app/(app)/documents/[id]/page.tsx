@@ -44,7 +44,7 @@ export default async function DocDetailPage({ params }: { params: Promise<{ id: 
         <BillLayout doc={doc} cust={cust} owner={owner as never} items={items} />
       </div>
       {doc.paidReportedAt && (
-        <div className="card px-4 py-3 border-l-4 border-l-amber-400">
+        <div className="card px-4 py-3 border-l-4 border-l-amber-400 no-print">
           <p className="text-[13px] font-semibold text-amber-600">ลูกค้าแจ้งชำระแล้ว</p>
           {doc.slipImage && (
             // eslint-disable-next-line @next/next/no-img-element
