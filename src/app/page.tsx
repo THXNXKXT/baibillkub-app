@@ -17,7 +17,7 @@ const FEATURES = [
 const STATS = [
   { n: "4", l: "ประเภทเอกสาร" },
   { n: "2 นาที", l: "ต่อบิลหนึ่งฉบับ" },
-  { n: "0", l: "ลูกค้าต้องสมัคร" },
+  { n: "1 ลิงก์", l: "ลูกค้าเปิดแล้วจ่ายได้เลย" },
 ];
 
 const COMPARE = [
@@ -111,9 +111,9 @@ export default function Landing() {
         {/* stats strip */}
         <motion.div {...fadeUp} transition={spring} className="grid grid-cols-3 gap-3 py-10 border-t border-[var(--color-rule)]">
           {STATS.map((s) => (
-            <div key={s.l} className="text-center">
-              <p className="text-[28px] font-bold text-[var(--color-accent-ink)] tabular-nums">{s.n}</p>
-              <p className="text-[12px] text-[var(--color-muted)] mt-1">{s.l}</p>
+            <div key={s.l} className="card px-4 py-5 text-center card-hover">
+              <p className="text-[26px] font-bold text-[var(--color-accent-ink)] tabular-nums leading-none">{s.n}</p>
+              <p className="text-[12px] text-[var(--color-muted)] mt-2">{s.l}</p>
             </div>
           ))}
         </motion.div>
@@ -159,18 +159,21 @@ export default function Landing() {
         {/* comparison */}
         <motion.div {...fadeUp} transition={spring} className="grid sm:grid-cols-2 gap-4 py-14 border-t border-[var(--color-rule)]">
           {COMPARE.map(([t, d], i) => (
-            <div key={t} className={`card px-5 pt-5 pb-6 ${i === 0 ? "opacity-70" : ""}`}>
-              <p className={`text-[15px] font-semibold ${i === 1 ? "text-[var(--color-accent-ink)]" : ""}`}>{t}</p>
-              <p className="text-[13px] text-[var(--color-muted)] mt-1.5 leading-relaxed">{d}</p>
+            <div key={t} className={`card px-5 pt-5 pb-6 relative overflow-hidden ${i === 0 ? "opacity-60" : ""}`}>
+              {i === 1 && <div className="absolute inset-x-0 top-0 h-1 bg-[var(--color-accent)]" />}
+              <p className="text-[11px] font-medium text-[var(--color-muted)] uppercase tracking-[0.08em]">{i === 0 ? "แบบเดิม" : "baibillkub"}</p>
+              <p className={`text-[15px] font-semibold mt-1.5 ${i === 1 ? "text-[var(--color-accent-ink)]" : ""}`}>{t}</p>
+              <p className="text-[13px] text-[var(--color-muted)] mt-1 leading-relaxed">{d}</p>
             </div>
           ))}
         </motion.div>
 
         {/* FAQ */}
-        <motion.div {...fadeUp} transition={spring} className="max-w-2xl mx-auto py-14 border-t border-[var(--color-rule)] space-y-6">
+        <motion.div {...fadeUp} transition={spring} className="max-w-2xl mx-auto py-14 border-t border-[var(--color-rule)] space-y-4">
+          <h2 className="text-[17px] font-semibold text-center mb-6">คำถามที่พบบ่อย</h2>
           {FAQ.map((f) => (
-            <div key={f.q}>
-              <p className="text-[15px] font-semibold">{f.q}</p>
+            <div key={f.q} className="card px-5 py-4">
+              <p className="text-[14px] font-semibold">{f.q}</p>
               <p className="text-[13px] text-[var(--color-muted)] mt-1">{f.a}</p>
             </div>
           ))}
