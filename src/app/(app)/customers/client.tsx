@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { createCustomer, deleteCustomer } from "@/lib/actions";
 import { useAppData } from "@/components/data-provider";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Trash2 } from "lucide-react";
 import Mascot from "@/components/mascot";
 import type { listCustomers } from "@/lib/actions";
 
@@ -11,6 +11,8 @@ type Cust = Awaited<ReturnType<typeof listCustomers>>[number];
 
 function CustomerRow({ c }: { c: Cust }) {
   const [open, setOpen] = useState(false);
+  const [confirm, setConfirm] = useState(false);
+  const { reload } = useAppData();
   return (
     <li>
       <button onClick={() => setOpen(!open)} className="w-full flex items-center gap-4 px-4 py-3 hover:bg-[var(--color-paper-2)] transition-colors text-left">
@@ -23,9 +25,23 @@ function CustomerRow({ c }: { c: Cust }) {
           {c.email && <span>{c.email}</span>}
           {c.taxId && <span className="tabular-nums">ภาษี {c.taxId}</span>}
           {c.address && <span className="whitespace-pre-line">{c.address}</span>}
-          <form action={deleteCustomer.bind(null, c.id)} className="ml-auto">
-            <button className="text-[11px] text-red-500 hover:underline">ลบ</button>
-          </form>
+          <button onClick={() => setConfirm(true)} className="ml-auto w-7 h-7 grid place-items-center rounded-md text-[var(--color-muted)] hover:bg-red-50 hover:text-red-500 transition-colors" title="ลบ">
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+      {confirm && (
+        <div className="fixed inset-0 z-50 bg-black/30 grid place-items-center px-4" onClick={() => setConfirm(false)}>
+          <div className="card px-5 py-5 max-w-sm w-full space-y-3" onClick={(e) => e.stopPropagation()}>
+            <p className="text-[14px] font-semibold">ลบ {c.name}?</p>
+            <p className="text-[13px] text-[var(--color-muted)]">ลูกค้าจะหายไปถาวร</p>
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => setConfirm(false)} className="btn-ghost px-4 py-1.5 text-[13px]">ยกเลิก</button>
+              <form action={async () => { await deleteCustomer(c.id); reload(); setConfirm(false); }}>
+                <button className="rounded-lg bg-red-500 text-white px-4 py-1.5 text-[13px] font-medium">ลบ</button>
+              </form>
+            </div>
+          </div>
         </div>
       )}
     </li>
