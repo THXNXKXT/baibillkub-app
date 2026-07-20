@@ -38,7 +38,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               </Link>
             );
           })}
-          <form action={signOut}>
+          <form action={signOut} onSubmit={() => localStorage.removeItem("baibillkub-data")}>
             <button className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-[var(--color-muted)] hover:text-red-500 transition-colors">
               <LogOut className="w-4 h-4" />
               ออกจากระบบ
