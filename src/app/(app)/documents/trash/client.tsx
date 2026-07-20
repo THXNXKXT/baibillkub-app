@@ -9,9 +9,9 @@ import { RotateCcw, Trash2 } from "lucide-react";
 const TYPE_LABEL: Record<string, string> = { quotation: "เสนอราคา", invoice: "แจ้งหนี้", receipt: "เสร็จ", delivery_note: "ส่งของ" };
 
 export default function TrashClient() {
-  const { documents, loading, reload } = useAppData();
+  const { trash, loading, reload } = useAppData();
   const [confirm, setConfirm] = useState<string | null>(null);
-  const trashed = documents.filter((d) => d.doc.deletedAt);
+  const trashed = trash;
 
   return (
     <div className="space-y-6">
