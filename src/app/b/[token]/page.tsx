@@ -1,8 +1,12 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { db } from "@/db";
 import { document, documentItem, customer, user } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import PublicDoc from "@/components/public-doc";
+
+// ponytail: public bill links — personal docs, transient, noindex
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function PublicDocPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;

@@ -194,6 +194,21 @@ export default function Landing() {
       <footer className="border-t border-[var(--color-rule)] py-6 text-center text-[11px] text-[var(--color-muted)]">
         baibillkub · 2026
       </footer>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: "baibillkub",
+            applicationCategory: "BusinessApplication",
+            operatingSystem: "Web",
+            offers: { "@type": "Offer", price: "0", priceCurrency: "THB" },
+            description: "ทำใบเสนอราคา ใบแจ้งหนี้ ใบเสร็จ ใบส่งของ ส่งลิงก์ให้ลูกค้า สแกนพร้อมเพย์จ่ายได้เลย",
+            inLanguage: "th-TH",
+          }),
+        }}
+      />
     </div>
   );
 }

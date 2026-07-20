@@ -4,13 +4,17 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: 'baibillkub — ใบบิลคับ "บิลสวย เก็บเงินไว"',
   description: "ใบเสนอราคา ใบแจ้งหนี้ ใบเสร็จ ใบส่งของ ส่งลิงก์ให้ลูกค้า สแกนพร้อมเพย์จ่ายได้เลย",
+  metadataBase: new URL("https://baibillkub.example"),
+  alternates: { canonical: "/" },
   icons: { icon: "/icon.svg", apple: "/apple-icon.png" },
   openGraph: {
     title: 'baibillkub — ใบบิลคับ "บิลสวย เก็บเงินไว"',
     description: "ทำบิลใน 2 นาที ส่งลิงก์เดียว ลูกค้าสแกนพร้อมเพย์จ่ายได้เลย",
     images: [{ url: "/og.png", width: 512, height: 512 }],
     type: "website",
+    locale: "th_TH",
   },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({
