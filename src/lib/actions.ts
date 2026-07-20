@@ -7,7 +7,6 @@ import { headers } from "next/headers";
 import { nanoid } from "nanoid";
 import { eq, and, desc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 async function uid() {
   const s = await auth.api.getSession({ headers: await headers() });
@@ -143,7 +142,6 @@ export async function deleteDocument(id: string) {
   if (!d || d.status === "paid") throw new Error("ลบใบที่ชำระแล้วไม่ได้");
   await db.update(document).set({ deletedAt: new Date() }).where(eq(document.id, id));
   revalidatePath("/documents");
-  redirect("/documents");
 }
 
 export async function restoreDocument(id: string) {
