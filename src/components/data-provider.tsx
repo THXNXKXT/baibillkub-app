@@ -14,11 +14,11 @@ type Data = {
 };
 type Ctx = Data & { reload: () => void };
 
-const DataCtx = createContext<Ctx>({ customers: [], documents: [], settings: null, loading: true, reload: () => {} });
+const DataCtx = createContext<Ctx>({ customers: [], documents: [], trash: [], settings: null, loading: true, reload: () => {} });
 const KEY = "baibillkub-data";
 
 export function DataProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<Data>({ customers: [], documents: [], settings: null, loading: true });
+  const [data, setData] = useState<Data>({ customers: [], documents: [], trash: [], settings: null, loading: true });
 
   const load = useCallback(async () => {
     try {
