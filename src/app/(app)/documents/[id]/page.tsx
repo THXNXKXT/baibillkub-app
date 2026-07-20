@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDocument, confirmPayment } from "@/lib/actions";
-import DeleteButton from "./delete-button";
 import PrintButton from "./print-button";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -36,7 +35,6 @@ export default async function DocDetailPage({ params }: { params: Promise<{ id: 
           </Link>
           <DocPDFButton doc={doc} cust={cust} owner={owner as never} items={items} />
           <PrintButton />
-          {doc.status === "draft" && <DeleteButton id={doc.id} />}
         </div>
       </div>
 
