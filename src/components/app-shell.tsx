@@ -41,6 +41,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <Link href="/documents/new" className="btn-accent mt-auto px-4 py-2 text-[13px] font-medium text-center">
           + สร้างเอกสาร
         </Link>
+        <button
+          onClick={async () => {
+            await fetch("/api/auth/sign-out", { method: "POST" });
+            window.location.href = "/login";
+          }}
+          className="mt-2 text-[12px] text-[var(--color-muted)] hover:text-red-500 text-left px-3 transition-colors"
+        >
+          ออกจากระบบ
+        </button>
       </aside>
 
       {/* bottom tab — mobile */}
