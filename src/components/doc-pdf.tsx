@@ -112,14 +112,30 @@ function DocPDF({ doc, cust, owner, items }: Props) {
 
         <View style={[s.row, { marginTop: 24 }]}>
           <View>
-            <Text style={s.section}>ช่องทางการชำระเงิน</Text>
-            <Text style={s.muted}>ชื่อบัญชี : {owner?.shopName || owner?.name}</Text>
-            {owner?.promptpayId && <Text style={s.muted}>พร้อมเพย์ : {owner.promptpayId}</Text>}
-            {doc.paymentMethod === "promptpay" && owner?.promptpayId && doc.publicToken && (
-              // eslint-disable-next-line jsx-a11y/alt-text
-              <Image src={`/api/qr?token=${doc.publicToken}`} style={{ width: 72, height: 72, marginTop: 4 }} />
-            )}
-            {doc.notes && <Text style={[s.muted, { marginTop: 4 }]}>{doc.notes}</Text>}
+            {(doc.type === "invoice" || doc.type === "quotation") && doc.paymentMethod ? (
+              <>
+                <Text style={s.section}>ช่องทางการชำระเงิน</Text>
+                {doc.paymentMethod === "promptpay" && owner?.promptpayId && (
+                  <>
+                    <Text style={s.muted}>ชื่อบัญชี : {owner.promptpayName || owner.shopName || owner.name}</Text>
+                    <Text style={s.muted}>พร้อมเพย์ : {owner.promptpayId}</Text>
+                    {doc.publicToken && (
+                      // eslint-disable-next-line jsx-a11y/alt-text
+                      <Image src={`/api/qr?token=${doc.publicToken}`} style={{ width: 72, height: 72, marginTop: 4 }} />
+                    )}
+                  </>
+                )}
+                {doc.paymentMethod === "bank" && owner?.bankAccount && (
+                  <>
+                    <Text style={s.muted}>ชื่อบัญชี : {owner.bankAccountName || owner.shopName || owner.name}</Text>
+                    <Text style={s.muted}>เลขบัญชี : {owner.bankAccount}{owner.bankName ? ` (${owner.bankName})` : ""}</Text>
+                  </>
+                )}
+                {doc.paymentMethod === "cash" && <Text style={s.muted}>เงินสด</Text>}
+              </>
+            ) : null}
+            {doc.terms && <Text style={[s.muted, { marginTop: 4 }]}>{doc.terms}</Text>}
+            {doc.notes && <Text style={[s.muted, { marginTop: 2 }]}>หมายเหตุ: {doc.notes}</Text>}
           </View>
           <View style={{ alignItems: "center", marginTop: 24 }}>
             {doc.showSignature && (
