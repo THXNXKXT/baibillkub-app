@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { LayoutDashboard, FileText, Users, Settings, LogOut } from "lucide-react";
-import { signOut } from "@/lib/auth-actions";
 
 const NAV = [
   { href: "/dashboard", label: "ภาพรวม", icon: LayoutDashboard },
