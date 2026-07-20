@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { LayoutDashboard, FileText, Users, Settings, LogOut } from "lucide-react";
+import Mascot from "@/components/mascot";
 
 const NAV = [
   { href: "/dashboard", label: "ภาพรวม", icon: LayoutDashboard },
@@ -18,8 +19,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex">
       {/* side rail */}
       <aside className="hidden sm:flex w-56 shrink-0 flex-col border-r border-[var(--color-rule)] bg-[var(--color-surface)] px-3 py-5">
-        <Link href="/dashboard" className="px-3 text-[15px] font-bold text-[var(--color-accent-ink)] tracking-[-0.01em]">
-          baibillkub
+        <Link href="/dashboard" className="px-3 flex items-center gap-2 text-[15px] font-bold text-[var(--color-accent-ink)] tracking-[-0.01em]">
+          <Mascot className="w-7 h-7 shrink-0" /> baibillkub
         </Link>
         <nav className="mt-6 flex flex-col gap-0.5">
           {NAV.map((n) => {
