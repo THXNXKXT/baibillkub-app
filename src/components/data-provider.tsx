@@ -41,6 +41,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (window.location.pathname === "/login") return;
     const t = setTimeout(load, 0);
     return () => clearTimeout(t);
   }, [load]);
