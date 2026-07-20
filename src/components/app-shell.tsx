@@ -43,7 +43,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </Link>
         <button
           onClick={async () => {
-            await fetch("/api/auth/sign-out", { method: "POST" });
+            const { createAuthClient } = await import("better-auth/client");
+            await createAuthClient().signOut();
             window.location.href = "/login";
           }}
           className="mt-2 text-[12px] text-[var(--color-muted)] hover:text-red-500 text-left px-3 transition-colors"
