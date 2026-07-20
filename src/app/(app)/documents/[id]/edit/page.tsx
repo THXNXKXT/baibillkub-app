@@ -1,7 +1,7 @@
 import { getDocument, listCustomers } from "@/lib/actions";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import DocForm from "../../doc-form";
 
 export default async function EditDocumentPage({ params }: { params: Promise<{ id: string }> }) {
