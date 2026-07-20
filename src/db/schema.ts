@@ -65,6 +65,7 @@ export const customer = pgTable("customer", {
   userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   email: text("email"),
+  phone: text("phone"),
   address: text("address"),
   taxId: text("tax_id"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
