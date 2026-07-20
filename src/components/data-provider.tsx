@@ -26,9 +26,16 @@ export function DataProvider({ children }: { children: ReactNode }) {
     } catch {}
     try {
       const [customers, documents, settings] = await Promise.all([listCustomers(), listDocuments(), getSettings()]);
+      if (!settings) throw new Error("unauthorized");
       setData({ customers, documents, settings, loading: false });
       try { localStorage.setItem(KEY, JSON.stringify({ customers, documents, settings })); } catch {}
-    } catch {
+    } catch (e) {
+      // ponytail: signOut แล้ว session หาย — อย่า retry ให้ redirect ไปเอง
+      if (e instanceof Error && e.message === "unauthorized") {
+        localStorage.removeItem(KEY);
+        window.location.href = "/login";
+        return;
+      }
       setData((p) => ({ ...p, loading: false }));
     }
   }, []);
