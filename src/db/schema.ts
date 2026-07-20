@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, numeric, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, integer, numeric, index } from "drizzle-orm/pg-core";
 
 // ---------- Better-Auth ----------
 export const user = pgTable("user", {
@@ -65,6 +65,7 @@ export const customer = pgTable("customer", {
   name: text("name").notNull(),
   email: text("email"),
   phone: text("phone"),
+  trashDays: integer("trash_days").notNull().default(14),
   address: text("address"),
   taxId: text("tax_id"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -94,6 +95,7 @@ export const document = pgTable("document", {
   paidReportedAt: timestamp("paid_reported_at"),
   showSignature: boolean("show_signature").notNull().default(true),
   signatureName: text("signature_name"),
+  deletedAt: timestamp("deleted_at"),
   confirmedAt: timestamp("confirmed_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

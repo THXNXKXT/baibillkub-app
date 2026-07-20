@@ -5,7 +5,7 @@ import { customer, document, documentItem, user } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { nanoid } from "nanoid";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -112,14 +112,15 @@ export async function createDocument(data: DocInput) {
   return doc;
 }
 
-export async function listDocuments(type?: string) {
+export async function listDocuments(type?: string, trash = false) {
   const userId = await uid();
-  const cond = type ? and(eq(document.userId, userId), eq(document.type, type as never)) : eq(document.userId, userId);
+  const conds = [eq(document.userId, userId), trash ? sql`${document.deletedAt} IS NOT NULL` : sql`${document.deletedAt} IS NULL`];
+  if (type) conds.push(eq(document.type, type as never));
   return db
     .select({ doc: document, customerName: customer.name })
     .from(document)
     .leftJoin(customer, eq(document.customerId, customer.id))
-    .where(cond)
+    .where(and(...conds))
     .orderBy(desc(document.createdAt));
 }
 
@@ -135,13 +136,61 @@ export async function getDocument(id: string) {
   return { ...row, items };
 }
 
+// ponytail: soft delete — ไปถังขยะก่อน กู้ได้; purge ตาม trashDays ตอน listTrash
 export async function deleteDocument(id: string) {
   const userId = await uid();
   const [d] = await db.select().from(document).where(and(eq(document.id, id), eq(document.userId, userId)));
   if (!d || d.status === "paid") throw new Error("ลบใบที่ชำระแล้วไม่ได้");
-  await db.delete(document).where(eq(document.id, id));
+  await db.update(document).set({ deletedAt: new Date() }).where(eq(document.id, id));
   revalidatePath("/documents");
   redirect("/documents");
+}
+
+export async function restoreDocument(id: string) {
+  const userId = await uid();
+  await db.update(document).set({ deletedAt: null }).where(and(eq(document.id, id), eq(document.userId, userId)));
+  revalidatePath("/documents/trash");
+}
+
+export async function purgeDocument(id: string) {
+  const userId = await uid();
+  await db.delete(document).where(and(eq(document.id, id), eq(document.userId, userId)));
+  revalidatePath("/documents/trash");
+}
+
+export async function listTrash() {
+  const userId = await uid();
+  // auto-purge เกิน trashDays
+  const [u] = await db.select({ trashDays: user.trashDays }).from(user).where(eq(user.id, userId));
+  const cutoff = new Date(Date.now() - (u?.trashDays ?? 14) * 86400000);
+  await db.delete(document).where(and(eq(document.userId, userId), sql`${document.deletedAt} < ${cutoff}`));
+  return listDocuments(undefined, true);
+}
+
+export async function saveTrashDays(days: number) {
+  const userId = await uid();
+  await db.update(user).set({ trashDays: days }).where(eq(user.id, userId));
+  revalidatePath("/settings");
+}
+
+// ponytail: แก้ไข draft เท่านั้น — ลบ items เก่าแล้วเขียนใหม่ (ง่ายกว่า diff)
+export async function updateDocument(id: string, data: DocInput) {
+  const userId = await uid();
+  const [d] = await db.select().from(document).where(and(eq(document.id, id), eq(document.userId, userId)));
+  if (!d || d.status !== "draft") throw new Error("แก้ไขได้เฉพาะร่าง");
+  const { subtotal, tax, total } = calc(data.items, data.taxRate, data.discount, data.discountType, data.whtRate);
+  await db.delete(documentItem).where(eq(documentItem.documentId, id));
+  await db.update(document).set({
+    customerId: data.customerId, issueDate: new Date(data.issueDate), dueDate: data.dueDate ? new Date(data.dueDate) : null,
+    notes: data.notes, terms: data.terms, showSignature: data.showSignature ?? true, signatureName: data.signatureName,
+    paymentMethod: data.paymentMethod, subtotal: subtotal.toFixed(2), tax: tax.toFixed(2),
+    discount: (data.discount ?? 0).toFixed(2), discountType: data.discountType ?? "amount",
+    whtRate: (data.whtRate ?? 0).toFixed(2), total: total.toFixed(2), updatedAt: new Date(),
+  }).where(eq(document.id, id));
+  if (data.items.length) {
+    await db.insert(documentItem).values(data.items.map((i) => ({ id: nanoid(), documentId: id, description: i.description, qty: String(i.qty), unitPrice: i.unitPrice.toFixed(2) })));
+  }
+  revalidatePath("/documents");
 }
 
 // ---------- Pay / Convert ----------

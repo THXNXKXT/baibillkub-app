@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createDocument, createCustomer, listCustomers, type DocInput } from "@/lib/actions";
+import { createDocument, createCustomer, updateDocument, listCustomers, getDocument, type DocInput } from "@/lib/actions";
 import { useAppData } from "@/components/data-provider";
 import type { auth } from "@/lib/auth";
 import { Plus, Trash2 } from "lucide-react";
@@ -28,12 +28,13 @@ function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void 
 }
 const fmt = (n: number) => n.toLocaleString("th-TH", { minimumFractionDigits: 2 });
 
-export default function DocForm({ customers, owner }: { customers: Awaited<ReturnType<typeof listCustomers>>; owner: NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>["user"] }) {
+export default function DocForm({ customers, owner, initial }: { customers: Awaited<ReturnType<typeof listCustomers>>; owner: NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>["user"]; initial?: Awaited<ReturnType<typeof getDocument>> }) {
   const router = useRouter();
   const { reload } = useAppData();
-  const [type, setTypeRaw] = useState<string>("invoice");
-  const [terms, setTerms] = useState("");
-  const [notes, setNotes] = useState("");
+  const init = initial?.doc;
+  const [type, setTypeRaw] = useState<string>(init?.type ?? "invoice");
+  const [terms, setTerms] = useState(init?.terms ?? "");
+  const [notes, setNotes] = useState(init?.notes ?? "");
   const DEFAULT_NOTES: Record<string, string> = {
     quotation: "",
     invoice: "",
@@ -45,23 +46,23 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
     setTerms((n) => (Object.values(DEFAULT_NOTES).includes(n) ? DEFAULT_NOTES[t] : n));
   }
   const [custMode, setCustMode] = useState<"pick" | "new">(customers.length ? "pick" : "new");
-  const [custId, setCustId] = useState("");
+  const [custId, setCustId] = useState(init?.customerId ?? "");
   const [newName, setNewName] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [newTaxId, setNewTaxId] = useState("");
   const [newAddress, setNewAddress] = useState("");
-  const [items, setItems] = useState<Item[]>([{ description: "", qty: 1, unitPrice: 0 }]);
-  const [taxRate, setTaxRate] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [discount, setDiscount] = useState(0);
-  const [discountType, setDiscountType] = useState<"amount" | "percent">("amount");
-  const [discOn, setDiscOn] = useState(false);
-  const [whtOn, setWhtOn] = useState(false);
-  const [showSignature, setShowSignature] = useState(true);
-  const [sigMode, setSigMode] = useState<"blank" | "name">("blank");
-  const [signatureName, setSignatureName] = useState("");
-  const [whtRate, setWhtRate] = useState(3);
+  const [items, setItems] = useState<Item[]>(initial?.items.length ? initial.items.map((i) => ({ description: i.description, qty: Number(i.qty), unitPrice: Number(i.unitPrice) })) : [{ description: "", qty: 1, unitPrice: 0 }]);
+  const [taxRate, setTaxRate] = useState(init ? (Number(init.tax) > 0 ? 7 : 0) : 0);
+  const [paymentMethod, setPaymentMethod] = useState(init?.paymentMethod ?? "");
+  const [discount, setDiscount] = useState(init ? Number(init.discount) : 0);
+  const [discountType, setDiscountType] = useState<"amount" | "percent">(init?.discountType ?? "amount");
+  const [discOn, setDiscOn] = useState(init ? Number(init.discount) > 0 : false);
+  const [whtOn, setWhtOn] = useState(init ? Number(init.whtRate) > 0 : false);
+  const [showSignature, setShowSignature] = useState(init?.showSignature ?? true);
+  const [sigMode, setSigMode] = useState<"blank" | "name">(init?.signatureName ? "name" : "blank");
+  const [signatureName, setSignatureName] = useState(init?.signatureName ?? "");
+  const [whtRate, setWhtRate] = useState(init ? Number(init.whtRate) || 3 : 3);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -106,7 +107,8 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
         signatureName: sigMode === "name" ? signatureName : undefined,
         items: validItems,
       };
-      await createDocument(data);
+      if (initial) await updateDocument(initial.doc.id, data);
+      else await createDocument(data);
       reload();
       router.push("/documents");
       router.refresh();
@@ -183,7 +185,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
             <div className="flex items-center gap-3 text-[13px]">
               <label className="flex items-center gap-1"><input type="radio" checked={sigMode === "blank"} onChange={() => setSigMode("blank")} /> เว้นว่างให้เซ็นเอง</label>
               <label className="flex items-center gap-1"><input type="radio" checked={sigMode === "name"} onChange={() => setSigMode("name")} /> พิมพ์ชื่อลงไป</label>
-              {sigMode === "name" && <input value={signatureName} onChange={(e) => setSignatureName(e.target.value)} placeholder="ชื่อผู้ลงนาม" className="field w-28 px-2 py-1.5 text-[13px]" />}
+              {sigMode === "name" && <input value={signatureName} onChange={(e) => setSignatureName(e.target.value)} placeholder="ชื่อผู้ลงนาม" className="field w-80 px-2 py-1.5 text-[13px]" />}
             </div>
           )}
         </div>
@@ -274,7 +276,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
     id: "", userId: "", customerId: "", type: type as never, number: "0000", status: "draft" as const,
     issueDate: new Date(), dueDate: null, terms: terms || null, notes: notes || null,
     subtotal: subtotal.toFixed(2), tax: tax.toFixed(2), discount: (discOn ? discount : 0).toFixed(2), discountType, whtRate: (whtOn ? whtRate : 0).toFixed(2), total: total.toFixed(2), showSignature, signatureName: sigMode === "name" ? signatureName : null,
-    paymentMethod: (paymentMethod || null) as never, publicToken: "", convertedFromId: null, slipImage: null, paidReportedAt: null, confirmedAt: null,
+    paymentMethod: (paymentMethod || null) as never, publicToken: "", convertedFromId: null, slipImage: null, paidReportedAt: null, deletedAt: null, confirmedAt: null,
     createdAt: new Date(), updatedAt: new Date(),
   };
   const custPreview = custMode === "new"

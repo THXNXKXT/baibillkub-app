@@ -1,6 +1,6 @@
 "use client";
 
-import { saveSettings } from "@/lib/actions";
+import { saveSettings, saveTrashDays } from "@/lib/actions";
 import { useAppData } from "@/components/data-provider";
 
 export default function SettingsPage() {
@@ -72,6 +72,15 @@ export default function SettingsPage() {
               <input name="bankAccountName" defaultValue={u.bankAccountName ?? ""} placeholder="ถ้าว่างจะใช้ชื่อร้าน" className={input} />
             </label>
           </div>
+        </div>
+
+        <div className="border-t border-[var(--color-rule)] pt-4 space-y-3">
+          <p className="text-[13px] font-semibold">ถังขยะ</p>
+          <label className={label}>ลบอัตโนมัติหลัง (วัน)
+            <select defaultValue={String(u.trashDays ?? 14)} onChange={(e) => saveTrashDays(Number(e.target.value))} className={`${input} w-32`}>
+              {[7, 14, 30].map((d) => <option key={d} value={d}>{d} วัน</option>)}
+            </select>
+          </label>
         </div>
 
         <button className="btn-accent px-6 py-2 text-[13px] font-medium">บันทึก</button>
