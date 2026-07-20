@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAppData } from "@/components/data-provider";
-import { FilePlus2 } from "lucide-react";
+import { FilePlus2, Pencil, Trash2 } from "lucide-react";
 import Mascot from "@/components/mascot";
 import { Suspense, useState } from "react";
 import { deleteDocument } from "@/lib/actions";
@@ -69,10 +69,16 @@ function List() {
                     </div>
                     <p className="text-[13px] font-semibold tabular-nums">{Number(doc.total).toLocaleString()} ฿</p>
                   </Link>
-                  {doc.status === "draft" && !doc.deletedAt && (
-                    <Link href={`/documents/${doc.id}/edit`} className="text-[11px] text-[var(--color-accent-ink)] hover:underline shrink-0">แก้ไข</Link>
+                  {(doc.status === "draft" || doc.status !== "paid") && !doc.deletedAt && (
+                    <div className="flex items-center gap-1 shrink-0">
+                      {doc.status === "draft" && (
+                        <Link href={`/documents/${doc.id}/edit`} className="w-7 h-7 grid place-items-center rounded-md text-[var(--color-muted)] hover:bg-[var(--color-accent-soft)] hover:text-[var(--color-accent-ink)] transition-colors" title="แก้ไข">
+                          <Pencil className="w-3.5 h-3.5" />
+                        </Link>
+                      )}
+                      <DeleteButton id={doc.id} number={doc.number} />
+                    </div>
                   )}
-                  {doc.status !== "paid" && !doc.deletedAt && <DeleteButton id={doc.id} number={doc.number} />}
                 </div>
               </li>
             );
@@ -92,7 +98,9 @@ function DeleteButton({ id, number }: { id: string; number: string }) {
   const { reload } = useAppData();
   return (
     <>
-      <button onClick={() => setOpen(true)} className="text-[11px] text-red-500 hover:underline shrink-0">ลบ</button>
+      <button onClick={() => setOpen(true)} className="w-7 h-7 grid place-items-center rounded-md text-[var(--color-muted)] hover:bg-red-50 hover:text-red-500 transition-colors" title="ลบ">
+        <Trash2 className="w-3.5 h-3.5" />
+      </button>
       {open && (
         <div className="fixed inset-0 z-50 bg-black/30 grid place-items-center px-4" onClick={() => setOpen(false)}>
           <div className="card px-5 py-5 max-w-sm w-full space-y-3" onClick={(e) => e.stopPropagation()}>
