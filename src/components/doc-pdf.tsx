@@ -122,9 +122,15 @@ function DocPDF({ doc, cust, owner, items }: Props) {
             {doc.notes && <Text style={[s.muted, { marginTop: 4 }]}>{doc.notes}</Text>}
           </View>
           <View style={{ alignItems: "center", marginTop: 24 }}>
-            <Text style={s.muted}>({owner?.name})</Text>
-            <Text style={s.muted}>ผู้มีอำนาจลงนาม</Text>
-            <Text style={s.muted}>{d}</Text>
+            {doc.showSignature && (
+              <>
+                <Text style={[s.muted, { borderBottomWidth: 1, borderBottomColor: "#e5e5e5", width: 120, textAlign: "center", paddingBottom: 2 }]}>
+                  {doc.signatureName || " "}
+                </Text>
+                <Text style={s.muted}>ผู้มีอำนาจลงนาม</Text>
+                <Text style={s.muted}>{d}</Text>
+              </>
+            )}
           </View>
         </View>
       </Page>
