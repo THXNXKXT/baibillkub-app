@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { LayoutDashboard, FileText, Users, Settings } from "lucide-react";
+import { signOut } from "@/lib/auth-actions";
 
 const NAV = [
   { href: "/dashboard", label: "ภาพรวม", icon: LayoutDashboard },
@@ -41,16 +42,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <Link href="/documents/new" className="btn-accent mt-auto px-4 py-2 text-[13px] font-medium text-center">
           + สร้างเอกสาร
         </Link>
-        <button
-          onClick={async () => {
-            const { createAuthClient } = await import("better-auth/client");
-            await createAuthClient().signOut();
-            window.location.href = "/login";
-          }}
-          className="mt-2 text-[12px] text-[var(--color-muted)] hover:text-red-500 text-left px-3 transition-colors"
-        >
-          ออกจากระบบ
-        </button>
+        <form action={signOut} className="mt-2">
+          <button className="text-[12px] text-[var(--color-muted)] hover:text-red-500 text-left px-3 transition-colors">
+            ออกจากระบบ
+          </button>
+        </form>
       </aside>
 
       {/* bottom tab — mobile */}
