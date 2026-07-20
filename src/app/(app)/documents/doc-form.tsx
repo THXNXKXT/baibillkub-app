@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createDocument, createCustomer, listCustomers, type DocInput } from "@/lib/actions";
+import { useAppData } from "@/components/data-provider";
 import type { auth } from "@/lib/auth";
 import { Plus, Trash2 } from "lucide-react";
 import BillLayout from "@/components/bill-layout";
@@ -29,6 +30,7 @@ const fmt = (n: number) => n.toLocaleString("th-TH", { minimumFractionDigits: 2 
 
 export default function DocForm({ customers, owner }: { customers: Awaited<ReturnType<typeof listCustomers>>; owner: NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>["user"] }) {
   const router = useRouter();
+  const { reload } = useAppData();
   const [type, setTypeRaw] = useState<string>("invoice");
   const [terms, setTerms] = useState("");
   const [notes, setNotes] = useState("");
@@ -105,6 +107,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
         items: validItems,
       };
       await createDocument(data);
+      reload();
       router.push("/documents");
       router.refresh();
     } catch (e) {
