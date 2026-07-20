@@ -183,7 +183,7 @@ export default function DocForm({ customers, owner }: { customers: Awaited<Retur
             <div className="flex items-center gap-3 text-[13px]">
               <label className="flex items-center gap-1"><input type="radio" checked={sigMode === "blank"} onChange={() => setSigMode("blank")} /> เว้นว่างให้เซ็นเอง</label>
               <label className="flex items-center gap-1"><input type="radio" checked={sigMode === "name"} onChange={() => setSigMode("name")} /> พิมพ์ชื่อลงไป</label>
-              {sigMode === "name" && <input value={signatureName} onChange={(e) => setSignatureName(e.target.value)} placeholder="ชื่อผู้ลงนาม" className={`${input} w-40`} />}
+              {sigMode === "name" && <input value={signatureName} onChange={(e) => setSignatureName(e.target.value)} placeholder="ชื่อผู้ลงนาม" className={`${input} w-28`} />}
             </div>
           )}
         </div>
