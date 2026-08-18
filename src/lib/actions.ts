@@ -9,20 +9,8 @@ import { eq, and, desc, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 async function uid() {
-  const requestHeaders = await headers();
-  const s = await auth.api.getSession({ headers: requestHeaders });
-  if (!s) {
-    if (process.env.NODE_ENV === "development") {
-      const cookieHeader = requestHeaders.get("cookie") ?? "";
-      console.error("[DEBUG-auth-session] Server Action session missing", {
-        host: requestHeaders.get("host"),
-        origin: requestHeaders.get("origin"),
-        hasCookieHeader: Boolean(cookieHeader),
-        hasSessionCookie: /better-auth\.session_token=/.test(cookieHeader),
-      });
-    }
-    throw new Error("unauthorized");
-  }
+  const s = await auth.api.getSession({ headers: await headers() });
+  if (!s) throw new Error("unauthorized");
   return s.user.id;
 }
 
