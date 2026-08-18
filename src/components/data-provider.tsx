@@ -27,10 +27,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
     } catch {}
     try {
       const response = await fetch("/api/app-data", { cache: "no-store", credentials: "include" });
-      if (response.status === 401) throw new Error("unauthorized");
+      if (response.status === 401) {
+        const details = await response.json().catch(() => ({})) as { reason?: string };
+        console.error("[auth] app-data rejected session", {
+          path: window.location.pathname,
+          reason: details.reason ?? "unknown",
+          status: response.status,
+        });
+        throw new Error("unauthorized");
+      }
       if (!response.ok) throw new Error(`app data request failed (${response.status})`);
       const nextData = await response.json() as Omit<Data, "loading">;
-      if (!nextData.settings) throw new Error("unauthorized");
+      if (!nextData.settings) {
+        console.error("[auth] app-data returned no user settings", { path: window.location.pathname });
+        throw new Error("app-data-invalid");
+      }
       setData({ ...nextData, loading: false });
       try { localStorage.setItem(KEY, JSON.stringify(nextData)); } catch {}
     } catch (e) {

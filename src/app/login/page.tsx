@@ -21,7 +21,8 @@ export default function LoginPage() {
       password: form.get("password"),
       ...(mode === "signup" ? { name: form.get("name") } : {}),
     };
-    // ponytail: raw fetch — client SDK มีปัญหา cross-origin/port
+    // Run the auth call as a Server Action so HttpOnly session cookies are
+    // written in the same request that performs the login.
     const result = mode === "login"
       ? await signIn(String(body.email), String(body.password))
       : await signUp(String(body.name), String(body.email), String(body.password));

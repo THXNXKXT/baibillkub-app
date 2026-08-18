@@ -5,18 +5,34 @@ import { auth } from "@/lib/auth";
 import { customer, document, user } from "@/db/schema";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function GET(request: Request) {
-  const authHeaders = new Headers();
-  const cookie = request.headers.get("cookie");
-  if (cookie) authHeaders.set("cookie", cookie);
-  const session = await auth.api.getSession({ headers: authHeaders });
+  // Pass the original request headers through. Better Auth can use the host
+  // and forwarded headers to resolve the deployment origin; copying only the
+  // cookie drops that context on Vercel and can make a valid cookie look stale.
+  const session = await auth.api.getSession({ headers: request.headers });
   if (!session) {
     const cookieHeader = request.headers.get("cookie") ?? "";
-    return NextResponse.json({
+    const response = NextResponse.json({
       error: "unauthorized",
       reason: cookieHeader ? "session-cookie-invalid" : "session-cookie-missing",
     }, { status: 401, headers: { "Cache-Control": "private, no-store" } });
+    // Remove an expired/invalid token before the client returns to login. This
+    // prevents a legacy cookie from shadowing the fresh cookie on next login.
+    for (const cookieName of [
+      "better-auth.session_token",
+      "better-auth.session_data",
+      "__Secure-better-auth.session_token",
+      "__Secure-better-auth.session_data",
+    ]) {
+      response.cookies.set(cookieName, "", {
+        maxAge: 0,
+        path: "/",
+        secure: cookieName.startsWith("__Secure-"),
+      });
+    }
+    return response;
   }
 
   const userId = session.user.id;
