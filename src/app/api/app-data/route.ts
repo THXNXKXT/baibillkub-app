@@ -1,16 +1,22 @@
 import { NextResponse } from "next/server";
 import { and, desc, eq, sql } from "drizzle-orm";
-import { headers } from "next/headers";
 import { db } from "@/db";
 import { auth } from "@/lib/auth";
 import { customer, document, user } from "@/db/schema";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  const session = await auth.api.getSession({ headers: await headers() });
+export async function GET(request: Request) {
+  const authHeaders = new Headers();
+  const cookie = request.headers.get("cookie");
+  if (cookie) authHeaders.set("cookie", cookie);
+  const session = await auth.api.getSession({ headers: authHeaders });
   if (!session) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    const cookieHeader = request.headers.get("cookie") ?? "";
+    return NextResponse.json({
+      error: "unauthorized",
+      reason: cookieHeader ? "session-cookie-invalid" : "session-cookie-missing",
+    }, { status: 401, headers: { "Cache-Control": "private, no-store" } });
   }
 
   const userId = session.user.id;

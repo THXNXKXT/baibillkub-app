@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Mascot from "@/components/mascot";
+import { signIn, signUp } from "@/lib/auth-actions";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,16 +22,12 @@ export default function LoginPage() {
       ...(mode === "signup" ? { name: form.get("name") } : {}),
     };
     // ponytail: raw fetch — client SDK มีปัญหา cross-origin/port
-    const res = await fetch(`/api/auth/${mode === "login" ? "sign-in/email" : "sign-up/email"}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify(body),
-    });
+    const result = mode === "login"
+      ? await signIn(String(body.email), String(body.password))
+      : await signUp(String(body.name), String(body.email), String(body.password));
     setLoading(false);
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      setError(data.message || "เข้าสู่ระบบไม่สำเร็จ");
+    if (!result.ok) {
+      setError(result.message ?? "เข้าสู่ระบบไม่สำเร็จ");
       return;
     }
 
