@@ -26,7 +26,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (cached) setData({ ...JSON.parse(cached), loading: false });
     } catch {}
     try {
-      const response = await fetch("/api/app-data", { cache: "no-store" });
+      const response = await fetch("/api/app-data", { cache: "no-store", credentials: "include" });
       if (response.status === 401) throw new Error("unauthorized");
       if (!response.ok) throw new Error(`app data request failed (${response.status})`);
       const nextData = await response.json() as Omit<Data, "loading">;

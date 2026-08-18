@@ -24,12 +24,24 @@ export default function LoginPage() {
     const res = await fetch(`/api/auth/${mode === "login" ? "sign-in/email" : "sign-up/email"}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify(body),
     });
     setLoading(false);
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       setError(data.message || "เข้าสู่ระบบไม่สำเร็จ");
+      return;
+    }
+
+    // Confirm the session cookie is usable before entering the protected app.
+    const sessionRes = await fetch("/api/auth/get-session", {
+      credentials: "include",
+      cache: "no-store",
+    });
+    const sessionData = await sessionRes.json().catch(() => null);
+    if (!sessionRes.ok || !sessionData?.user) {
+      setError("เข้าสู่ระบบสำเร็จแต่สร้าง session ไม่ได้ กรุณาตรวจค่า BETTER_AUTH_SECRET และ BETTER_AUTH_URL");
       return;
     }
     router.push("/dashboard");
